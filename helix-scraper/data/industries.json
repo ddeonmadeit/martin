@@ -1,0 +1,20 @@
+{
+  "categories": [
+    { "slug": "ugc-agency", "label": "UGC Agency", "tier": 1, "searchKeywords": ["UGC agency", "UGC studio", "UGC ads agency"] },
+    { "slug": "performance-creative-studio", "label": "Performance Creative Studio", "tier": 1, "searchKeywords": ["performance creative studio", "creative testing agency", "ad creative studio"] },
+    { "slug": "dtc-ad-agency", "label": "DTC Ad Agency", "tier": 1, "searchKeywords": ["DTC ad agency", "DTC creative agency"] },
+    { "slug": "meta-ads-agency", "label": "Meta Ads Agency", "tier": 1, "searchKeywords": ["Meta ads agency", "Facebook ads agency", "paid social agency"] },
+    { "slug": "tiktok-ads-agency", "label": "TikTok Ads Agency", "tier": 1, "searchKeywords": ["TikTok ads agency", "TikTok creative agency"] },
+    { "slug": "direct-response-agency", "label": "Direct Response Agency", "tier": 1, "searchKeywords": ["direct response creative agency", "ad creative at scale", "scaling creative agency"] },
+    { "slug": "growth-marketing-agency", "label": "Growth Marketing Agency", "tier": 1, "searchKeywords": ["growth marketing agency", "performance marketing agency"] },
+    { "slug": "dtc-skincare", "label": "DTC Skincare Brand", "tier": 2, "searchKeywords": ["DTC skincare brand", "skincare ecommerce brand"] },
+    { "slug": "dtc-supplements", "label": "DTC Supplements Brand", "tier": 2, "searchKeywords": ["DTC supplements brand", "wellness DTC brand"] },
+    { "slug": "dtc-fitness", "label": "DTC Fitness Brand", "tier": 2, "searchKeywords": ["DTC fitness brand", "fitness ecommerce"] },
+    { "slug": "dtc-home", "label": "DTC Home & Garden Brand", "tier": 2, "searchKeywords": ["DTC home brand", "home products ecommerce"] },
+    { "slug": "dtc-pet", "label": "DTC Pet Care Brand", "tier": 2, "searchKeywords": ["DTC pet brand", "pet care ecommerce"] },
+    { "slug": "dtc-food", "label": "DTC Food & Beverage Brand", "tier": 2, "searchKeywords": ["DTC food brand", "food ecommerce brand"] },
+    { "slug": "freelance-creative-strategist", "label": "Freelance Creative Strategist", "tier": 3, "searchKeywords": ["freelance creative strategist", "UGC strategist freelance"] },
+    { "slug": "ugc-director-freelance", "label": "Freelance UGC Director", "tier": 3, "searchKeywords": ["UGC director freelance", "UGC producer solo"] },
+    { "slug": "freelance-performance-creative", "label": "Freelance Performance Creative", "tier": 3, "searchKeywords": ["freelance performance creative", "ad strategist freelance"] }
+  ]
+}

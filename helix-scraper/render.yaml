@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: helix-scraper
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: TARGET_LEADS
+        value: 1000

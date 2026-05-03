@@ -1,0 +1,19 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "providers": ["node"],
+      "phases": {
+        "install": {
+          "cmds": ["npm install --prefix helix-scraper"]
+        }
+      }
+    }
+  },
+  "deploy": {
+    "startCommand": "node helix-scraper/server.js",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}

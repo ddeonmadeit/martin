@@ -1,0 +1,21 @@
+{
+  "locations": [
+    { "slug": "sydney", "label": "Sydney", "country": "AU" },
+    { "slug": "melbourne", "label": "Melbourne", "country": "AU" },
+    { "slug": "brisbane", "label": "Brisbane", "country": "AU" },
+    { "slug": "perth", "label": "Perth", "country": "AU" },
+    { "slug": "auckland", "label": "Auckland", "country": "NZ" },
+    { "slug": "new-york", "label": "New York", "country": "US" },
+    { "slug": "los-angeles", "label": "Los Angeles", "country": "US" },
+    { "slug": "austin", "label": "Austin", "country": "US" },
+    { "slug": "miami", "label": "Miami", "country": "US" },
+    { "slug": "london", "label": "London", "country": "UK" },
+    { "slug": "toronto", "label": "Toronto", "country": "CA" },
+    { "slug": "vancouver", "label": "Vancouver", "country": "CA" },
+    { "slug": "dublin", "label": "Dublin", "country": "IE" },
+    { "slug": "amsterdam", "label": "Amsterdam", "country": "NL" },
+    { "slug": "berlin", "label": "Berlin", "country": "DE" },
+    { "slug": "singapore", "label": "Singapore", "country": "SG" },
+    { "slug": "dubai", "label": "Dubai", "country": "AE" }
+  ]
+}
