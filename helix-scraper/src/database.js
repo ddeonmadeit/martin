@@ -67,7 +67,7 @@ function _initSchema(db) {
     );
   `);
 
-  db.prepare(`INSERT OR IGNORE INTO resend_config (id) VALUES (1)`).run();
+  db.prepare(`INSERT OR IGNORE INTO resend_config (id, from_name, from_email) VALUES (1, 'Martin', 'martin@preemo.club')`).run();
   db.prepare(`INSERT OR IGNORE INTO email_template (id) VALUES (1)`).run();
 }
 
@@ -141,17 +141,23 @@ function markEmailFailed(email, error) {
 // ── Resend Config ─────────────────────────────────────────────────────────────
 
 function getResendConfig() {
-  return getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
+  const row = getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
+  // Env vars override DB values so Railway config works without touching the UI
+  return {
+    api_key:    process.env.RESEND_API_KEY    || row.api_key    || '',
+    from_name:  process.env.RESEND_FROM_NAME  || row.from_name  || 'Martin',
+    from_email: process.env.RESEND_FROM_EMAIL || row.from_email || 'martin@preemo.club',
+  };
 }
 
 function saveResendConfig({ api_key, from_name, from_email }) {
-  const existing = getResendConfig();
+  const existing = getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
   getDb().prepare(`
     UPDATE resend_config SET api_key = @api_key, from_name = @from_name, from_email = @from_email WHERE id = 1
   `).run({
     api_key:    (api_key && api_key !== '••••••••') ? api_key : existing.api_key,
-    from_name:  from_name  || '',
-    from_email: from_email || ''
+    from_name:  from_name  || 'Martin',
+    from_email: from_email || 'martin@preemo.club'
   });
 }
 
