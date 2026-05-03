@@ -1,29 +1,34 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 
 module.exports = {
-  // Website scraping
-  SITE_DELAY_MIN: 800,
-  SITE_DELAY_MAX: 2500,
-  SITE_CONCURRENCY: parseInt(process.env.SITE_CONCURRENCY, 10) || 10,
+  // ── Speed settings ─────────────────────────────────────────────
+  // Site scraping: near-zero delay — each domain is different, minimal rate-limit risk
+  SITE_DELAY_MIN: 0,
+  SITE_DELAY_MAX: 150,
+  SITE_CONCURRENCY: parseInt(process.env.SITE_CONCURRENCY, 10) || 25,
 
-  // Search engine scraping
-  SEARCH_DELAY_MIN: 5000,
-  SEARCH_DELAY_MAX: 12000,
+  // Search engines: reduced from 5-12s to 1-2.5s — still safe against blocks
+  SEARCH_DELAY_MIN: 1000,
+  SEARCH_DELAY_MAX: 2500,
   SEARCH_CONCURRENCY: 1,
+  // How many segment×location combos to search in parallel (DDG+Bing run inside each)
+  SEARCH_PARALLEL: parseInt(process.env.SEARCH_PARALLEL, 10) || 4,
 
-  // General
-  REQUEST_TIMEOUT: 10000,
-  MAX_RETRIES: 2,
-  RETRY_BACKOFF_BASE: 5000,
+  // Network: tighter timeouts = faster failure recovery
+  REQUEST_TIMEOUT: 7000,
+  MAX_RETRIES: 1,
+  RETRY_BACKOFF_BASE: 1500,
 
-  // Target
+  // ── Target ─────────────────────────────────────────────────────
   TARGET_LEADS: parseInt(process.env.TARGET_LEADS, 10) || 2000,
 
-  // Paths
-  OUTPUT_DIR: require('path').join(__dirname, '..', 'output'),
+  // ── Paths ──────────────────────────────────────────────────────
+  // Set OUTPUT_DIR env var in Railway and mount a volume there for persistence
+  // Example: OUTPUT_DIR=/data  (then mount Railway volume at /data)
+  OUTPUT_DIR: process.env.OUTPUT_DIR || require('path').join(__dirname, '..', 'output'),
   DATA_DIR: require('path').join(__dirname, '..', 'data'),
 
-  // Free email domains to discard
+  // ── Email filtering ────────────────────────────────────────────
   FREE_EMAIL_DOMAINS: [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
     'icloud.com', 'live.com', 'yahoo.com.au', 'hotmail.com.au',
@@ -31,20 +36,17 @@ module.exports = {
     'protonmail.com', 'zoho.com'
   ],
 
-  // Automated email prefixes to discard
   AUTOMATED_PREFIXES: [
     'noreply', 'no-reply', 'donotreply', 'do-not-reply', 'mailer-daemon',
     'postmaster', 'bounce', 'auto', 'daemon'
   ],
 
-  // Generic email prefixes
   GENERIC_PREFIXES: [
     'info', 'admin', 'sales', 'hello', 'enquiries', 'enquiry',
     'office', 'reception', 'contact', 'accounts', 'support',
     'general', 'mail', 'team', 'help'
   ],
 
-  // Junk domains to skip from search results
   JUNK_DOMAINS: [
     'facebook.com', 'instagram.com', 'youtube.com', 'linkedin.com',
     'twitter.com', 'x.com', 'pinterest.com', 'tiktok.com',
@@ -58,7 +60,7 @@ module.exports = {
     'medium.com', 'substack.com'
   ],
 
-  // ICP signal keywords — presence on a site increases lead quality score
+  // ── ICP scoring ────────────────────────────────────────────────
   ICP_SIGNAL_KEYWORDS: [
     'ugc', 'ugc ads', 'ugc agency', 'ugc studio',
     'performance creative', 'creative testing', 'ad creative',
@@ -72,14 +74,12 @@ module.exports = {
     'direct response', 'scroll-stopping'
   ],
 
-  // Anti-ICP signals — presence downgrades quality score
   ANTI_ICP_KEYWORDS: [
     'b2b saas', 'enterprise marketing', 'pr agency', 'public relations',
     'web3', 'crypto', 'nft', 'influencer marketing', 'brand awareness',
     'corporate video', 'event management', 'traditional media'
   ],
 
-  // Buyer/decision-maker title keywords for owner detection
   OWNER_KEYWORDS: [
     'founder', 'co-founder', 'owner', 'director', 'managing director',
     'ceo', 'chief executive', 'head of production', 'head of creative',
@@ -88,14 +88,13 @@ module.exports = {
     'director of performance marketing', 'growth lead'
   ],
 
-  // Tier 1 buyer titles for bonus scoring
   BUYER_TITLES_TIER1: [
     'founder', 'head of production', 'creative director',
     'head of creative', 'creative strategist', 'performance creative lead',
     'head of paid social', 'director of performance marketing', 'vp growth'
   ],
 
-  // Subpages to check for emails
+  // ── Subpages to check (ordered by email-find likelihood) ──────
   CONTACT_SUBPAGES: [
     '/contact', '/contact-us', '/contact.html',
     '/about', '/about-us', '/about.html',
@@ -103,9 +102,14 @@ module.exports = {
     '/work-with-us', '/hire-us', '/services'
   ],
 
-  // Block tracking per source
-  BLOCK_PAUSE_MS: 30000,
-  BLOCK_LONG_PAUSE_MS: 300000,
+  // Quick subpages — used when homepage already has emails
+  CONTACT_SUBPAGES_QUICK: [
+    '/contact', '/contact-us'
+  ],
+
+  // ── Block handling ─────────────────────────────────────────────
+  BLOCK_PAUSE_MS: 20000,
+  BLOCK_LONG_PAUSE_MS: 120000,
   MAX_CONSECUTIVE_BLOCKS: 3,
 
   VERBOSE: process.env.VERBOSE === 'true'

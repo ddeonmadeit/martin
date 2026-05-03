@@ -162,9 +162,12 @@ async function scrapeSite(company, verbose = false) {
     if (verbose) console.log(`    Error fetching ${baseUrl}: ${err.message}`);
   }
 
+  // If homepage already yielded emails, only hit 2 quick subpages instead of all 10
+  const subpages = allEmails.length > 0 ? config.CONTACT_SUBPAGES_QUICK : config.CONTACT_SUBPAGES;
+
   // Fetch subpages in parallel (limited)
   const limit = pLimit(3);
-  const subpagePromises = config.CONTACT_SUBPAGES.map(subpage =>
+  const subpagePromises = subpages.map(subpage =>
     limit(async () => {
       try {
         const url = baseUrl + subpage;

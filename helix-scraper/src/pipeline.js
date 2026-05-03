@@ -27,6 +27,19 @@ function logError(msg) {
   } catch {}
 }
 
+function ts() {
+  return new Date().toLocaleTimeString('en-AU', { hour12: false });
+}
+
+function stars(score) {
+  const n = Math.max(0, Math.min(5, Math.round(score)));
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+function rpad(str, len) {
+  return String(str || '').padEnd(len).slice(0, len);
+}
+
 class ScraperPipeline extends EventEmitter {
   constructor(options = {}) {
     super();
@@ -83,6 +96,7 @@ class ScraperPipeline extends EventEmitter {
   abort() {
     this.aborted = true;
     this.emit('log', { type: 'warn', message: 'Abort requested — finishing current tasks...' });
+    console.log(`[${ts()}]  ABORT   Stop requested — finishing active tasks…`);
   }
 
   async run() {
@@ -102,6 +116,7 @@ class ScraperPipeline extends EventEmitter {
           if (existing > 0) {
             this.leadCount = existing;
             this.emit('log', { type: 'info', message: `Resumed — ${existing} existing leads loaded` });
+            console.log(`[${ts()}]  RESUME  ${existing} existing leads loaded`);
           }
         } catch (err) {
           this.emit('log', { type: 'warn', message: `Could not load existing CSV: ${err.message}` });
@@ -111,11 +126,35 @@ class ScraperPipeline extends EventEmitter {
       csvWriter.init(this.resume);
       this.leadCount = csvWriter.leadCount;
 
-      const companyQueue = [];
       const targetSegments = this.getSegments();
       const targetLocations = this.getLocations();
+      const totalCombos = targetSegments.length * targetLocations.length;
+
+      console.log(`\n${'━'.repeat(72)}`);
+      console.log(`  PREEMO LEADS  target=${this.target}  segments=${targetSegments.length}  locations=${targetLocations.length}  combos=${totalCombos}`);
+      console.log(`${'━'.repeat(72)}\n`);
 
       const self = this;
+
+      // Shared site-scraping pool — active throughout entire run
+      const siteLimit = pLimit(config.SITE_CONCURRENCY);
+      const allSiteTasks = [];
+
+      function queueSite(company) {
+        const task = siteLimit(async () => {
+          if (self.leadCount >= self.target || self.aborted) return;
+          try {
+            await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
+            const lead = await scrapeSite(company, self.verbose);
+            tryAddLead(lead);
+          } catch (err) {
+            logError(`Site ${company.website}: ${err.message}`);
+          } finally {
+            self.domainsScraped++;
+          }
+        });
+        allSiteTasks.push(task);
+      }
 
       function tryAddLead(lead) {
         if (self.leadCount >= self.target) return false;
@@ -147,156 +186,192 @@ class ScraperPipeline extends EventEmitter {
 
         self.emit('lead', entry);
         self.emit('progress', self.getStatus());
+
+        const num = String(self.leadCount).padStart(4, '0');
+        console.log(
+          `[${ts()}]  #${num}  ${rpad(lead.email, 38)}  ${rpad(lead.companyName || '—', 24)}  ${rpad(lead.emailType || 'generic', 9)}  ${stars(lead.qualityScore || 0)}`
+        );
+
         return true;
       }
 
-      // ═══════════ PHASE 1 — ICP Keyword Search ═══════════
-      this.phase = 'phase1';
-      this.emit('log', { type: 'phase', message: 'Phase 1 — ICP keyword search (DDG + Bing)' });
-      this.emit('progress', this.getStatus());
-
-      for (const seg of targetSegments) {
-        for (const loc of targetLocations) {
-          if (this.leadCount >= this.target || this.aborted) break;
-
-          if (this.enabledSources.includes('duckduckgo')) {
-            try {
-              const results = await searchDuckDuckGo(seg, loc, this.verbose);
-              for (const r of results) {
-                if (dedup.isDomainNew(r.website)) {
-                  dedup.registerDomain(r.website);
-                  companyQueue.push({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: 'duckduckgo' });
-                }
-              }
-              if (results.length > 0) {
-                this.emit('log', { type: 'success', message: `DDG: ${seg.slug}/${loc.slug} — ${results.length} domains` });
-              }
-            } catch (err) {
-              logError(`DDG ${seg.slug}/${loc.slug}: ${err.message}`);
-            }
-          }
-
-          if (this.enabledSources.includes('bing')) {
-            try {
-              const results = await searchBing(seg, loc, this.verbose);
-              for (const r of results) {
-                if (dedup.isDomainNew(r.website)) {
-                  dedup.registerDomain(r.website);
-                  companyQueue.push({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: 'bing' });
-                }
-              }
-              if (results.length > 0) {
-                this.emit('log', { type: 'success', message: `Bing: ${seg.slug}/${loc.slug} — ${results.length} domains` });
-              }
-            } catch (err) {
-              logError(`Bing ${seg.slug}/${loc.slug}: ${err.message}`);
-            }
-          }
-        }
-        if (this.leadCount >= this.target || this.aborted) break;
+      // Print progress summary every 30 s
+      let lastProgressPrint = Date.now();
+      function maybePrintProgress() {
+        if (Date.now() - lastProgressPrint < 30000) return;
+        lastProgressPrint = Date.now();
+        const elapsed = Math.round((Date.now() - self.startTime) / 1000);
+        const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const ss = String(elapsed % 60).padStart(2, '0');
+        console.log(`\n[${ts()}]  ── ${self.leadCount} leads │ ${self.domainsScraped} domains scraped │ ${mm}:${ss} elapsed ──\n`);
       }
 
-      this.domainsScraped = dedup.domainCount;
-      this.emit('log', { type: 'info', message: `Phase 1 complete — ${companyQueue.length} domains queued` });
+      // ═══════════ SEARCH + SCRAPE (interleaved) ═══════════
+      this.phase = 'searching';
+      this.emit('log', { type: 'phase', message: 'Searching and extracting emails simultaneously' });
       this.emit('progress', this.getStatus());
 
-      // ═══════════ PHASE 2 — Email Extraction ═══════════
-      if (companyQueue.length > 0 && this.leadCount < this.target && !this.aborted) {
-        this.phase = 'phase2';
-        this.emit('log', { type: 'phase', message: `Phase 2 — Extracting emails from ${companyQueue.length} websites` });
+      // Shuffle combos so coverage is spread across segments/locations
+      const allCombos = [];
+      for (const seg of targetSegments) {
+        for (const loc of targetLocations) {
+          allCombos.push({ seg, loc });
+        }
+      }
+      for (let i = allCombos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allCombos[i], allCombos[j]] = [allCombos[j], allCombos[i]];
+      }
+
+      const searchLimit = pLimit(config.SEARCH_PARALLEL);
+
+      const searchTasks = allCombos.map(({ seg, loc }) =>
+        searchLimit(async () => {
+          if (self.leadCount >= self.target || self.aborted) return;
+          maybePrintProgress();
+
+          const engines = [];
+
+          if (self.enabledSources.includes('duckduckgo')) {
+            engines.push(
+              searchDuckDuckGo(seg, loc, self.verbose)
+                .then(r => r.map(x => ({ ...x, source: 'duckduckgo' })))
+                .catch(err => {
+                  logError(`DDG ${seg.slug}/${loc.slug}: ${err.message}`);
+                  return [];
+                })
+            );
+          }
+
+          if (self.enabledSources.includes('bing')) {
+            engines.push(
+              searchBing(seg, loc, self.verbose)
+                .then(r => r.map(x => ({ ...x, source: 'bing' })))
+                .catch(err => {
+                  logError(`Bing ${seg.slug}/${loc.slug}: ${err.message}`);
+                  return [];
+                })
+            );
+          }
+
+          const allResults = (await Promise.all(engines)).flat();
+
+          let newCount = 0;
+          for (const r of allResults) {
+            if (dedup.isDomainNew(r.website)) {
+              dedup.registerDomain(r.website);
+              queueSite({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: r.source });
+              newCount++;
+            }
+          }
+
+          if (newCount > 0) {
+            const msg = `${seg.slug}/${loc.slug} → ${newCount} new domains`;
+            self.emit('log', { type: 'success', message: msg });
+            console.log(`[${ts()}]  SEARCH  ${msg}`);
+          }
+        })
+      );
+
+      await Promise.all(searchTasks);
+
+      console.log(`\n[${ts()}]  SEARCH DONE  all combos complete — waiting for scrapers to finish…\n`);
+      this.emit('log', { type: 'info', message: `Search complete — waiting for scrapers to finish…` });
+
+      await Promise.all(allSiteTasks);
+      this.domainsScraped = dedup.domainCount;
+
+      // ═══════════ FALLBACK QUERIES ═══════════
+      if (this.leadCount < this.target && !this.aborted) {
+        this.phase = 'phase3';
+        const need = this.target - this.leadCount;
+        console.log(`\n[${ts()}]  FALLBACK  need ${need} more leads — running fallback queries\n`);
+        this.emit('log', { type: 'phase', message: `Fallback queries — need ${need} more leads` });
         this.emit('progress', this.getStatus());
 
-        const siteLimit = pLimit(config.SITE_CONCURRENCY);
-        const siteTasks = companyQueue.map(company =>
-          siteLimit(async () => {
-            if (this.leadCount >= this.target || this.aborted) return;
-            try {
-              await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
-              const lead = await scrapeSite(company, this.verbose);
-              tryAddLead(lead);
-            } catch (err) {
-              logError(`Site ${company.website}: ${err.message}`);
+        const fbSegments = targetSegments.slice(0, 8);
+        const fbLocations = targetLocations.slice(0, 6);
+
+        const fbCombos = [];
+        for (const seg of fbSegments) {
+          for (const loc of fbLocations) {
+            fbCombos.push({ seg, loc });
+          }
+        }
+
+        const fbSiteTasks = [];
+        const fbSearchLimit = pLimit(config.SEARCH_PARALLEL);
+
+        const fbSearchTasks = fbCombos.map(({ seg, loc }) =>
+          fbSearchLimit(async () => {
+            if (self.leadCount >= self.target || self.aborted) return;
+
+            const fbEngines = [];
+
+            if (self.enabledSources.includes('duckduckgo')) {
+              fbEngines.push((async () => {
+                const results = [];
+                for (const q of ddgFallback(seg, loc)) {
+                  try {
+                    const stub = { label: q, searchKeywords: [q] };
+                    const r = await searchDuckDuckGo(stub, loc, self.verbose);
+                    results.push(...r.map(x => ({ ...x, source: 'duckduckgo' })));
+                  } catch (err) {
+                    logError(`DDG fallback ${seg.slug}/${loc.slug}: ${err.message}`);
+                  }
+                }
+                return results;
+              })());
+            }
+
+            if (self.enabledSources.includes('bing')) {
+              fbEngines.push((async () => {
+                const results = [];
+                for (const q of bingFallback(seg, loc)) {
+                  try {
+                    const stub = { label: q, searchKeywords: [q] };
+                    const r = await searchBing(stub, loc, self.verbose);
+                    results.push(...r.map(x => ({ ...x, source: 'bing' })));
+                  } catch (err) {
+                    logError(`Bing fallback ${seg.slug}/${loc.slug}: ${err.message}`);
+                  }
+                }
+                return results;
+              })());
+            }
+
+            const allResults = (await Promise.all(fbEngines)).flat();
+            let added = 0;
+
+            for (const r of allResults) {
+              if (dedup.isDomainNew(r.website)) {
+                dedup.registerDomain(r.website);
+                const company = { website: r.website, companyName: '', industry: seg.label, location: loc.label, source: r.source };
+                const task = siteLimit(async () => {
+                  if (self.leadCount >= self.target || self.aborted) return;
+                  try {
+                    await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
+                    const lead = await scrapeSite(company, self.verbose);
+                    tryAddLead(lead);
+                  } catch (err) {
+                    logError(`Site ${company.website}: ${err.message}`);
+                  } finally {
+                    self.domainsScraped++;
+                  }
+                });
+                fbSiteTasks.push(task);
+                added++;
+              }
+            }
+
+            if (added > 0) {
+              console.log(`[${ts()}]  FALLBACK  ${seg.slug}/${loc.slug} → ${added} new domains`);
             }
           })
         );
 
-        await Promise.all(siteTasks);
-        this.domainsScraped = dedup.domainCount;
-        this.emit('log', { type: 'info', message: `Phase 2 complete — ${this.leadCount} leads` });
-        this.emit('progress', this.getStatus());
-      }
-
-      // ═══════════ PHASE 3 — Fallback Queries ═══════════
-      if (this.leadCount < this.target && !this.aborted) {
-        this.phase = 'phase3';
-        this.emit('log', { type: 'phase', message: `Phase 3 — Fallback queries (need ${this.target - this.leadCount} more)` });
-        this.emit('progress', this.getStatus());
-
-        const fallbackSegments = targetSegments.slice(0, 8);
-        const fallbackLocations = targetLocations.slice(0, 6);
-
-        for (const seg of fallbackSegments) {
-          for (const loc of fallbackLocations) {
-            if (this.leadCount >= this.target || this.aborted) break;
-
-            const newDomains = [];
-            const fbQ = ddgFallback(seg, loc);
-
-            if (this.enabledSources.includes('duckduckgo')) {
-              try {
-                for (const query of fbQ) {
-                  const stub = { label: query, searchKeywords: [query] };
-                  const results = await searchDuckDuckGo(stub, loc, this.verbose);
-                  for (const r of results) {
-                    if (dedup.isDomainNew(r.website)) {
-                      dedup.registerDomain(r.website);
-                      newDomains.push({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: 'duckduckgo' });
-                    }
-                  }
-                }
-              } catch (err) {
-                logError(`DDG fallback ${seg.slug}/${loc.slug}: ${err.message}`);
-              }
-            }
-
-            if (this.enabledSources.includes('bing')) {
-              try {
-                for (const query of bingFallback(seg, loc)) {
-                  const stub = { label: query, searchKeywords: [query] };
-                  const results = await searchBing(stub, loc, this.verbose);
-                  for (const r of results) {
-                    if (dedup.isDomainNew(r.website)) {
-                      dedup.registerDomain(r.website);
-                      newDomains.push({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: 'bing' });
-                    }
-                  }
-                }
-              } catch (err) {
-                logError(`Bing fallback ${seg.slug}/${loc.slug}: ${err.message}`);
-              }
-            }
-
-            if (newDomains.length > 0) {
-              this.emit('log', { type: 'info', message: `Fallback: ${seg.slug}/${loc.slug} — ${newDomains.length} new domains` });
-              const siteLimit = pLimit(config.SITE_CONCURRENCY);
-              const siteTasks = newDomains.map(company =>
-                siteLimit(async () => {
-                  if (this.leadCount >= this.target || this.aborted) return;
-                  try {
-                    await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
-                    const lead = await scrapeSite(company, this.verbose);
-                    tryAddLead(lead);
-                  } catch (err) {
-                    logError(`Site ${company.website}: ${err.message}`);
-                  }
-                })
-              );
-              await Promise.all(siteTasks);
-            }
-          }
-          if (this.leadCount >= this.target || this.aborted) break;
-        }
-
+        await Promise.all(fbSearchTasks);
+        await Promise.all(fbSiteTasks);
         this.domainsScraped = dedup.domainCount;
         this.emit('progress', this.getStatus());
       }
@@ -304,6 +379,13 @@ class ScraperPipeline extends EventEmitter {
       csvWriter.close();
       this.phase = 'done';
       this.running = false;
+
+      const elapsed = Math.round((Date.now() - this.startTime) / 1000);
+      const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const ss = String(elapsed % 60).padStart(2, '0');
+      console.log(`\n${'━'.repeat(72)}`);
+      console.log(`  DONE  ${this.leadCount}/${this.target} leads  │  ${this.domainsScraped} domains  │  ${mm}:${ss} elapsed`);
+      console.log(`${'━'.repeat(72)}\n`);
 
       const finalStatus = this.getStatus();
       this.emit('log', { type: 'phase', message: `Complete — ${this.leadCount}/${this.target} leads collected` });
