@@ -6,7 +6,7 @@
       "providers": ["node", "python"],
       "phases": {
         "setup": {
-          "aptPkgs": ["make", "g++"]
+          "aptPkgs": ["make", "g++", "python3"]
         },
         "install": {
           "cmds": ["npm install --prefix helix-scraper"]
