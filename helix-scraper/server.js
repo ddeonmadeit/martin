@@ -235,6 +235,75 @@ app.get('/api/email/events', (req, res) => {
   req.on('close', () => emailSseClients.delete(res));
 });
 
+// ════════════════════════════════════════════════════════════════════════════
+// MAIL STUDIO API
+// ════════════════════════════════════════════════════════════════════════════
+
+app.post('/api/mail/send-single', async (req, res) => {
+  const { to, subject, html } = req.body;
+  if (!to || !subject || !html) {
+    return res.status(400).json({ error: 'to, subject and html are required' });
+  }
+  try {
+    const cfg = db.getResendConfig();
+    if (!cfg.api_key) throw new Error('Resend API key not configured');
+    const { Resend } = require('resend');
+    const resend = new Resend(cfg.api_key);
+    const fromAddr = cfg.from_name ? `${cfg.from_name} <${cfg.from_email}>` : cfg.from_email;
+    const { error } = await resend.emails.send({ from: fromAddr, to, subject, html });
+    if (error) throw new Error(error.message || String(error));
+    res.json({ message: 'Email sent' });
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.post('/api/mail/send-bulk', async (req, res) => {
+  const { recipients, subject, html } = req.body; // recipients: [{email, ...vars}]
+  if (!recipients?.length || !subject || !html) {
+    return res.status(400).json({ error: 'recipients, subject and html are required' });
+  }
+  try {
+    const cfg = db.getResendConfig();
+    if (!cfg.api_key) throw new Error('Resend API key not configured');
+    const { Resend } = require('resend');
+    const resend = new Resend(cfg.api_key);
+    const fromAddr = cfg.from_name ? `${cfg.from_name} <${cfg.from_email}>` : cfg.from_email;
+    let ok = 0, failed = 0;
+    for (const r of recipients) {
+      try {
+        const filled = (s) => s.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (_, k) => r[k] ?? '');
+        const { error } = await resend.emails.send({
+          from: fromAddr, to: r.email,
+          subject: filled(subject), html: filled(html),
+        });
+        if (error) throw new Error(error.message);
+        ok++;
+      } catch { failed++; }
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    res.json({ ok, failed });
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.get('/api/mail/sent', (req, res) => {
+  try { res.json(db.getSentEmails()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/mail/templates', (req, res) => {
+  try { res.json(db.getMailTemplates()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/mail/templates', (req, res) => {
+  try { db.saveMailTemplate(req.body); res.json({ message: 'Template saved' }); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/mail/templates/:id', (req, res) => {
+  try { db.deleteMailTemplate(req.params.id); res.json({ message: 'Template deleted' }); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ────────────────────────────────────────────────────────────────────────────
 
 app.get('*', (req, res) => {

@@ -50,6 +50,21 @@ function _initSchema(db) {
       subject TEXT DEFAULT '',
       body    TEXT DEFAULT ''
     );
+
+    CREATE TABLE IF NOT EXISTS mail_templates (
+      id           TEXT    PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
+      name         TEXT    NOT NULL,
+      subject      TEXT    DEFAULT '',
+      body_html    TEXT    DEFAULT '',
+      font_family  TEXT    DEFAULT '',
+      text_color   TEXT    DEFAULT '#e8edf2',
+      bg_color     TEXT    DEFAULT '#0b0f1a',
+      card_color   TEXT    DEFAULT '#111827',
+      accent_color TEXT    DEFAULT '#22d3ee',
+      show_logo    INTEGER DEFAULT 1,
+      show_footer  INTEGER DEFAULT 1,
+      created_at   TEXT    DEFAULT (datetime('now'))
+    );
   `);
 
   db.prepare(`INSERT OR IGNORE INTO resend_config (id) VALUES (1)`).run();
@@ -152,6 +167,44 @@ function saveEmailTemplate({ subject, body }) {
   ).run({ subject: subject || '', body: body || '' });
 }
 
+// ── Mail Templates ────────────────────────────────────────────────────────────
+
+function getMailTemplates() {
+  return getDb().prepare(`SELECT * FROM mail_templates ORDER BY created_at DESC`).all();
+}
+
+function saveMailTemplate(t) {
+  return getDb().prepare(`
+    INSERT INTO mail_templates
+      (name, subject, body_html, font_family, text_color, bg_color, card_color, accent_color, show_logo, show_footer)
+    VALUES
+      (@name, @subject, @body_html, @font_family, @text_color, @bg_color, @card_color, @accent_color, @show_logo, @show_footer)
+  `).run({
+    name:         t.name         || '',
+    subject:      t.subject      || '',
+    body_html:    t.body_html    || '',
+    font_family:  t.font_family  || '',
+    text_color:   t.text_color   || '#e8edf2',
+    bg_color:     t.bg_color     || '#0b0f1a',
+    card_color:   t.card_color   || '#111827',
+    accent_color: t.accent_color || '#22d3ee',
+    show_logo:    t.show_logo    ? 1 : 0,
+    show_footer:  t.show_footer  ? 1 : 0,
+  });
+}
+
+function deleteMailTemplate(id) {
+  return getDb().prepare(`DELETE FROM mail_templates WHERE id = ?`).run(id);
+}
+
+function getSentEmails(limit = 200) {
+  return getDb().prepare(`
+    SELECT email AS to_email, company_name, '' AS subject, email_sent_at AS created_at, email_status AS status
+    FROM leads WHERE email_status IN ('sent','failed')
+    ORDER BY email_sent_at DESC LIMIT ?
+  `).all(limit);
+}
+
 module.exports = {
   getDb,
   upsertLead,
@@ -163,5 +216,9 @@ module.exports = {
   getResendConfig,
   saveResendConfig,
   getEmailTemplate,
-  saveEmailTemplate
+  saveEmailTemplate,
+  getMailTemplates,
+  saveMailTemplate,
+  deleteMailTemplate,
+  getSentEmails,
 };
