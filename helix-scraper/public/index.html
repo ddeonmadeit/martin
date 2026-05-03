@@ -1113,44 +1113,28 @@
   </div>
 
   <div class="email-section glass-strong">
-    <div class="email-section-header">SMTP + Outreach</div>
+    <div class="email-section-header">Resend + Outreach</div>
 
-    <!-- SMTP Config (collapsible) -->
+    <!-- Resend Config (collapsible) -->
     <div class="smtp-toggle" id="smtpToggle">
       <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-      SMTP Configuration
+      Resend Configuration
       <svg class="smtp-toggle-arrow" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </div>
     <div class="smtp-form-body" id="smtpFormBody">
       <div class="smtp-form-grid">
         <div class="form-group">
-          <label>SMTP Host</label>
-          <input id="smtpHost" placeholder="smtp.office365.com">
-        </div>
-        <div class="form-group">
-          <label>Port</label>
-          <input type="number" id="smtpPort" value="587" placeholder="587">
-        </div>
-        <div class="form-group">
-          <label>Username</label>
-          <input id="smtpUser" placeholder="you@yourdomain.com">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="smtpPass" placeholder="App password">
+          <label>API Key</label>
+          <input type="password" id="resendApiKey" placeholder="re_xxxxxxxxxxxxxxxxxx">
         </div>
         <div class="form-group">
           <label>From Name</label>
-          <input id="smtpFromName" placeholder="Your Name">
+          <input id="resendFromName" placeholder="Your Name">
         </div>
         <div class="form-group">
           <label>From Email</label>
-          <input id="smtpFromEmail" placeholder="you@yourdomain.com">
+          <input id="resendFromEmail" placeholder="you@yourdomain.com">
         </div>
-      </div>
-      <div class="toggle-row" style="margin-bottom:16px">
-        <input type="checkbox" id="smtpSecure">
-        <label for="smtpSecure" style="cursor:pointer;font-size:13px;color:var(--text-muted)">Use SSL/TLS on port 465 (leave off for port 587 STARTTLS)</label>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="btnSaveSmtp">Save Config</button>
@@ -1467,49 +1451,41 @@
     $('smtpFormBody').classList.toggle('open');
   });
 
-  // Load saved config
-  fetch('/api/smtp/config').then(r => r.json()).then(cfg => {
-    $('smtpHost').value      = cfg.host      || 'smtp.office365.com';
-    $('smtpPort').value      = cfg.port      || 587;
-    $('smtpSecure').checked  = cfg.secure === 1;
-    $('smtpUser').value      = cfg.user      || '';
-    $('smtpPass').value      = cfg.pass      || '';
-    $('smtpFromName').value  = cfg.from_name  || '';
-    $('smtpFromEmail').value = cfg.from_email || '';
+  // Load saved Resend config
+  fetch('/api/resend/config').then(r => r.json()).then(cfg => {
+    $('resendApiKey').value   = cfg.api_key   || '';
+    $('resendFromName').value = cfg.from_name  || '';
+    $('resendFromEmail').value = cfg.from_email || '';
   }).catch(() => {});
 
   $('btnSaveSmtp').addEventListener('click', async () => {
     const body = {
-      host:       $('smtpHost').value.trim(),
-      port:       parseInt($('smtpPort').value, 10) || 587,
-      secure:     $('smtpSecure').checked,
-      user:       $('smtpUser').value.trim(),
-      pass:       $('smtpPass').value,
-      from_name:  $('smtpFromName').value.trim(),
-      from_email: $('smtpFromEmail').value.trim()
+      api_key:    $('resendApiKey').value,
+      from_name:  $('resendFromName').value.trim(),
+      from_email: $('resendFromEmail').value.trim()
     };
-    const r = await fetch('/api/smtp/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const r = await fetch('/api/resend/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const d = await r.json();
     notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
   });
 
   $('btnTestSmtp').addEventListener('click', async () => {
     notify('Testing connection...', 'info');
-    const r = await fetch('/api/smtp/test', { method: 'POST' });
+    const r = await fetch('/api/resend/test', { method: 'POST' });
     const d = await r.json();
     notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
   });
 
   // ── Email Template ────────────────────────────────────────────
 
-  fetch('/api/smtp/template').then(r => r.json()).then(t => {
+  fetch('/api/resend/template').then(r => r.json()).then(t => {
     if (t.subject) $('emailSubject').value = t.subject;
     if (t.body)    $('emailBody').value    = t.body;
   }).catch(() => {});
 
   $('btnSaveTemplate').addEventListener('click', async () => {
     const body = { subject: $('emailSubject').value, body: $('emailBody').value };
-    const r = await fetch('/api/smtp/template', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const r = await fetch('/api/resend/template', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const d = await r.json();
     notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
   });

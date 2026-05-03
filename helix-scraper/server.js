@@ -146,24 +146,24 @@ app.get('/api/db/leads', (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// SMTP CONFIG API
+// RESEND CONFIG API
 // ════════════════════════════════════════════════════════════════════════════
 
-app.get('/api/smtp/config', (req, res) => {
+app.get('/api/resend/config', (req, res) => {
   try {
-    const cfg = db.getSmtpConfig();
-    res.json({ ...cfg, pass: cfg.pass ? '••••••••' : '' });
+    const cfg = db.getResendConfig();
+    res.json({ ...cfg, api_key: cfg.api_key ? '••••••••' : '' });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/smtp/config', (req, res) => {
+app.post('/api/resend/config', (req, res) => {
   try {
-    db.saveSmtpConfig(req.body);
-    res.json({ message: 'SMTP config saved' });
+    db.saveResendConfig(req.body);
+    res.json({ message: 'Resend config saved' });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/smtp/test', async (req, res) => {
+app.post('/api/resend/test', async (req, res) => {
   try {
     await new EmailSender().testConnection();
     res.json({ message: 'Connection successful ✓' });
@@ -174,12 +174,12 @@ app.post('/api/smtp/test', async (req, res) => {
 // EMAIL TEMPLATE API
 // ════════════════════════════════════════════════════════════════════════════
 
-app.get('/api/smtp/template', (req, res) => {
+app.get('/api/resend/template', (req, res) => {
   try { res.json(db.getEmailTemplate()); }
   catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/smtp/template', (req, res) => {
+app.post('/api/resend/template', (req, res) => {
   try {
     db.saveEmailTemplate(req.body);
     res.json({ message: 'Template saved' });

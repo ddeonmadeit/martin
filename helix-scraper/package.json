@@ -22,7 +22,7 @@
     "csv-writer": "^1.6.0",
     "dotenv": "^16.4.0",
     "express": "^4.22.1",
-    "nodemailer": "^6.9.13",
-    "p-limit": "^3.1.0"
+    "p-limit": "^3.1.0",
+    "resend": "^3.2.0"
   }
 }

@@ -1,7 +1,7 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const EventEmitter = require('events');
 const {
-  getSmtpConfig,
+  getResendConfig,
   getEmailTemplate,
   getUnsentLeads,
   markEmailSent,
@@ -23,24 +23,14 @@ function extractFirstName(ownerName) {
   return ownerName.trim().split(/\s+/)[0];
 }
 
-function buildTransporter(cfg) {
-  return nodemailer.createTransport({
-    host:   cfg.host,
-    port:   parseInt(cfg.port, 10),
-    secure: cfg.secure === 1 || cfg.secure === true,
-    auth:   { user: cfg.user, pass: cfg.pass },
-    tls:    { rejectUnauthorized: false }
-  });
-}
-
 class EmailSender extends EventEmitter {
   constructor() {
     super();
-    this.running  = false;
-    this.aborted  = false;
-    this.sent     = 0;
-    this.failed   = 0;
-    this.total    = 0;
+    this.running = false;
+    this.aborted = false;
+    this.sent    = 0;
+    this.failed  = 0;
+    this.total   = 0;
   }
 
   abort() {
@@ -48,21 +38,22 @@ class EmailSender extends EventEmitter {
   }
 
   async testConnection() {
-    const cfg = getSmtpConfig();
-    if (!cfg.host || !cfg.user) throw new Error('SMTP host and username are required');
-    const transport = buildTransporter(cfg);
-    await transport.verify();
+    const cfg = getResendConfig();
+    if (!cfg.api_key) throw new Error('Resend API key is required');
+    const resend = new Resend(cfg.api_key);
+    const { data, error } = await resend.domains.list();
+    if (error) throw new Error(error.message || 'Invalid API key');
+    return data;
   }
 
   async sendToUnsent({ delayMs = 5000 } = {}) {
     if (this.running) throw new Error('Email sender is already running');
 
-    const cfg      = getSmtpConfig();
+    const cfg      = getResendConfig();
     const template = getEmailTemplate();
 
-    if (!cfg.host || !cfg.user || !cfg.pass) {
-      throw new Error('SMTP not fully configured — set host, user and password first');
-    }
+    if (!cfg.api_key)    throw new Error('Resend API key not configured');
+    if (!cfg.from_email) throw new Error('From email not configured');
     if (!template.subject || !template.body) {
       throw new Error('Email template is empty — write a subject and body first');
     }
@@ -81,7 +72,10 @@ class EmailSender extends EventEmitter {
 
     this.emit('start', { total: this.total });
 
-    const transport = buildTransporter(cfg);
+    const resend   = new Resend(cfg.api_key);
+    const fromAddr = cfg.from_name
+      ? `${cfg.from_name} <${cfg.from_email}>`
+      : cfg.from_email;
 
     for (const lead of leads) {
       if (this.aborted) break;
@@ -95,18 +89,29 @@ class EmailSender extends EventEmitter {
         location:    lead.location     || ''
       };
 
-      const subject = renderTemplate(template.subject, vars);
-      const body    = renderTemplate(template.body, vars);
+      const subject  = renderTemplate(template.subject, vars);
+      const bodyText = renderTemplate(template.body, vars);
+      const bodyHtml = bodyText.replace(/\n/g, '<br>');
 
-      try {
-        await transport.sendMail({
-          from:    `"${cfg.from_name}" <${cfg.from_email || cfg.user}>`,
-          to:      lead.email,
-          subject,
-          text:    body,
-          html:    body.replace(/\n/g, '<br>')
+      const { data, error } = await resend.emails.send({
+        from:    fromAddr,
+        to:      lead.email,
+        subject,
+        text:    bodyText,
+        html:    bodyHtml
+      });
+
+      if (error) {
+        markEmailFailed(lead.email, error.message || String(error));
+        this.failed++;
+        this.emit('failed', {
+          email:  lead.email,
+          error:  error.message || String(error),
+          sent:   this.sent,
+          failed: this.failed,
+          total:  this.total
         });
-
+      } else {
         markEmailSent(lead.email);
         this.sent++;
         this.emit('sent', {
@@ -115,16 +120,6 @@ class EmailSender extends EventEmitter {
           sent:    this.sent,
           failed:  this.failed,
           total:   this.total
-        });
-      } catch (err) {
-        markEmailFailed(lead.email, err.message);
-        this.failed++;
-        this.emit('failed', {
-          email:  lead.email,
-          error:  err.message,
-          sent:   this.sent,
-          failed: this.failed,
-          total:  this.total
         });
       }
 

@@ -38,15 +38,11 @@ function _initSchema(db) {
       email_error   TEXT    DEFAULT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS smtp_config (
-      id          INTEGER PRIMARY KEY CHECK (id = 1),
-      host        TEXT    DEFAULT 'smtp.office365.com',
-      port        INTEGER DEFAULT 587,
-      secure      INTEGER DEFAULT 0,
-      user        TEXT    DEFAULT '',
-      pass        TEXT    DEFAULT '',
-      from_name   TEXT    DEFAULT '',
-      from_email  TEXT    DEFAULT ''
+    CREATE TABLE IF NOT EXISTS resend_config (
+      id         INTEGER PRIMARY KEY CHECK (id = 1),
+      api_key    TEXT    DEFAULT '',
+      from_name  TEXT    DEFAULT '',
+      from_email TEXT    DEFAULT ''
     );
 
     CREATE TABLE IF NOT EXISTS email_template (
@@ -56,7 +52,7 @@ function _initSchema(db) {
     );
   `);
 
-  db.prepare(`INSERT OR IGNORE INTO smtp_config (id) VALUES (1)`).run();
+  db.prepare(`INSERT OR IGNORE INTO resend_config (id) VALUES (1)`).run();
   db.prepare(`INSERT OR IGNORE INTO email_template (id) VALUES (1)`).run();
 }
 
@@ -127,26 +123,18 @@ function markEmailFailed(email, error) {
   ).run(String(error).slice(0, 500), email);
 }
 
-// ── SMTP Config ───────────────────────────────────────────────────────────────
+// ── Resend Config ─────────────────────────────────────────────────────────────
 
-function getSmtpConfig() {
-  return getDb().prepare(`SELECT * FROM smtp_config WHERE id = 1`).get();
+function getResendConfig() {
+  return getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
 }
 
-function saveSmtpConfig({ host, port, secure, user, pass, from_name, from_email }) {
-  const existing = getSmtpConfig();
+function saveResendConfig({ api_key, from_name, from_email }) {
+  const existing = getResendConfig();
   getDb().prepare(`
-    UPDATE smtp_config
-    SET host = @host, port = @port, secure = @secure,
-        user = @user, pass = @pass,
-        from_name = @from_name, from_email = @from_email
-    WHERE id = 1
+    UPDATE resend_config SET api_key = @api_key, from_name = @from_name, from_email = @from_email WHERE id = 1
   `).run({
-    host:       host       || '',
-    port:       parseInt(port, 10) || 587,
-    secure:     secure ? 1 : 0,
-    user:       user       || '',
-    pass:       (pass && pass !== '••••••••') ? pass : existing.pass,
+    api_key:    (api_key && api_key !== '••••••••') ? api_key : existing.api_key,
     from_name:  from_name  || '',
     from_email: from_email || ''
   });
@@ -172,8 +160,8 @@ module.exports = {
   getUnsentLeads,
   markEmailSent,
   markEmailFailed,
-  getSmtpConfig,
-  saveSmtpConfig,
+  getResendConfig,
+  saveResendConfig,
   getEmailTemplate,
   saveEmailTemplate
 };
