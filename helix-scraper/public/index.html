@@ -59,20 +59,16 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,1),
-        0 2px 8px rgba(0,0,0,0.07),
-        0 1px 2px rgba(0,0,0,0.04);
+        inset 0 2px 4px rgba(0,0,0,0.04),
+        0 1px 3px rgba(0,0,0,0.05);
     }
 
     /* ═══ Header ═══ */
     .header {
       position: sticky;
-      top: 0;
-      z-index: 100;
+      top: 0; z-index: 100;
       padding: 13px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       background: #ffffff;
       border-bottom: 1px solid var(--border);
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -81,53 +77,39 @@
     .header-logo  { width: 40px; height: 40px; object-fit: contain; display: block; }
 
     /* ═══ Layout ═══ */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 22px 20px;
-    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 22px 20px; }
 
     /* ═══ Stats Grid ═══ */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 12px; margin-bottom: 18px;
     }
     @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
     .stat-card {
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
+      padding: 18px 20px; position: relative; overflow: hidden;
       animation: fade-up 0.4s ease both;
     }
     .stat-card::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: linear-gradient(90deg, transparent, var(--primary-border), transparent);
-      opacity: 0;
-      transition: opacity var(--transition);
+      opacity: 0; transition: opacity var(--transition);
     }
     .stat-card:hover::after { opacity: 1; }
     .stat-card .label {
-      font-size: 11px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.8px;
-      color: var(--text-dim); margin-bottom: 7px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--text-dim); margin-bottom: 7px;
     }
     .stat-card .value {
-      font-size: 30px; font-weight: 800; line-height: 1;
-      color: var(--text);
+      font-size: 30px; font-weight: 800; line-height: 1; color: var(--text);
       transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
     }
     .stat-card:hover .value { transform: scale(1.05); }
     .stat-card .value.teal   { color: var(--primary); }
     .stat-card .value.green  { color: var(--green); }
     .stat-card .value.yellow { color: var(--yellow); }
-
     .stat-card:nth-child(1) { animation-delay: 0s; }
     .stat-card:nth-child(2) { animation-delay: 0.05s; }
     .stat-card:nth-child(3) { animation-delay: 0.10s; }
@@ -140,27 +122,15 @@
     }
 
     /* ═══ Progress ═══ */
-    .progress-section {
-      padding: 18px 22px;
-      margin-bottom: 18px;
-      animation: fade-up 0.4s ease 0.12s both;
-    }
-    .progress-top {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px;
-    }
+    .progress-section { padding: 18px 22px; margin-bottom: 18px; animation: fade-up 0.4s ease 0.12s both; }
+    .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .phase-badge {
       display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 13px;
-      background: var(--primary-dim);
-      border: 1px solid var(--primary-border);
-      border-radius: var(--radius-pill);
+      padding: 5px 13px; background: var(--primary-dim);
+      border: 1px solid var(--primary-border); border-radius: var(--radius-pill);
       font-size: 12px; font-weight: 600; color: var(--primary-dark);
     }
-    .phase-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--primary);
-    }
+    .phase-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
     .phase-dot.active { animation: pulse-dot 1.5s ease-in-out infinite; }
     @keyframes pulse-dot {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -168,9 +138,8 @@
     }
     .progress-count { font-size: 13px; color: var(--text-muted); font-weight: 500; }
     .progress-track {
-      height: 6px; background: #dde4ed;
-      border-radius: 3px; overflow: hidden;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+      height: 6px; background: #dde4ed; border-radius: 3px; overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
     }
     .progress-fill {
       height: 100%; border-radius: 3px;
@@ -179,28 +148,15 @@
     }
 
     /* ═══ Controls ═══ */
-    .controls-section {
-      padding: 24px 26px;
-      margin-bottom: 18px;
-      animation: fade-up 0.4s ease 0.18s both;
-    }
+    .controls-section { padding: 24px 26px; margin-bottom: 18px; animation: fade-up 0.4s ease 0.18s both; }
     .controls-header {
-      font-size: 14px; font-weight: 700;
-      margin-bottom: 18px;
-      display: flex; align-items: center; gap: 8px;
-      color: var(--text);
+      font-size: 14px; font-weight: 700; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px; color: var(--text);
     }
-    .controls-header::before {
-      content: ''; width: 3px; height: 15px;
-      background: var(--primary); border-radius: 2px;
-    }
+    .controls-header::before { content: ''; width: 3px; height: 15px; background: var(--primary); border-radius: 2px; }
 
     /* ═══ Form elements ═══ */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px; margin-bottom: 20px;
-    }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
     .form-group label {
       display: block; font-size: 11px; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.7px;
@@ -209,18 +165,16 @@
     .form-group input,
     .form-group select {
       width: 100%; padding: 10px 13px;
-      background: var(--bg-inset);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'Inter', sans-serif; font-size: 14px;
-      outline: none; transition: all var(--transition);
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+      background: var(--bg-inset); border: 1px solid var(--border);
+      border-top-color: var(--border-mid);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+      transition: all var(--transition);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.07), inset 0 1px 2px rgba(0,0,0,0.05);
     }
     .form-group input:focus,
     .form-group select:focus {
-      border-color: var(--primary);
-      background: #fff;
+      border-color: var(--primary); background: #fff;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 3px var(--primary-dim);
     }
     .form-group select option { background: #fff; color: var(--text); }
@@ -228,161 +182,137 @@
     /* ═══ Source chips ═══ */
     .source-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
     .source-chip {
-      display: flex; align-items: center; gap: 7px;
-      padding: 7px 14px;
+      display: flex; align-items: center; gap: 7px; padding: 7px 14px;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #fff 0%, #f4f7fb 100%);
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      background: linear-gradient(180deg, #dce4ee 0%, #edf1f7 100%);
       font-size: 12px; font-weight: 500; color: var(--text-muted);
       cursor: pointer; user-select: none; transition: all var(--transition);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(0,0,0,0.07);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.85);
     }
-    .source-chip:hover { border-color: var(--border-mid); }
+    .source-chip:hover { background: linear-gradient(180deg, #e2eaf2 0%, #eef2f8 100%); }
     .source-chip.active {
-      border-color: var(--primary-border);
-      background: linear-gradient(180deg, rgba(71,138,194,0.14) 0%, rgba(71,138,194,0.08) 100%);
+      border-color: var(--primary-border); border-top-color: rgba(71,138,194,0.5);
+      background: linear-gradient(180deg, rgba(71,138,194,0.22) 0%, rgba(71,138,194,0.10) 100%);
       color: var(--primary-dark);
-      box-shadow: inset 0 1px 2px rgba(71,138,194,0.1), 0 1px 3px rgba(71,138,194,0.12);
+      box-shadow: inset 0 2px 4px rgba(71,138,194,0.20), inset 0 1px 2px rgba(71,138,194,0.12), 0 1px 0 rgba(255,255,255,0.7);
     }
     .source-chip input { display: none; }
-    .source-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: all var(--transition); }
+    .source-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-mid); transition: all var(--transition); }
     .source-chip.active .source-dot { background: var(--primary); }
 
-    /* ═══ Buttons — Embossed ═══ */
+    /* ═══ Buttons — Debossed ═══ */
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn {
-      padding: 10px 22px;
-      border-radius: var(--radius-pill);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-      border: 1px solid rgba(0,0,0,0.14);
-      background: linear-gradient(180deg, #ffffff 0%, #edf1f7 100%);
+      padding: 10px 22px; border-radius: var(--radius-pill);
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all var(--transition);
+      border: 1px solid rgba(0,0,0,0.20); border-top-color: rgba(0,0,0,0.26);
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
       color: var(--text);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,1),
-        inset 0 -1px 0 rgba(0,0,0,0.07),
-        0 1px 3px rgba(0,0,0,0.13),
-        0 2px 6px rgba(0,0,0,0.07);
+        inset 0 2px 4px rgba(0,0,0,0.12),
+        inset 0 1px 2px rgba(0,0,0,0.08),
+        0 1px 0 rgba(255,255,255,0.88);
     }
     .btn:hover {
-      background: linear-gradient(180deg, #ffffff 0%, #e4eaf3 100%);
-      transform: translateY(-1px);
+      background: linear-gradient(180deg, #dde7f0 0%, #eef2f8 100%);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,1),
-        inset 0 -1px 0 rgba(0,0,0,0.09),
-        0 3px 8px rgba(0,0,0,0.14),
-        0 4px 12px rgba(0,0,0,0.07);
+        inset 0 1px 3px rgba(0,0,0,0.09),
+        inset 0 1px 1px rgba(0,0,0,0.06),
+        0 1px 0 rgba(255,255,255,0.88);
     }
     .btn:active {
-      transform: translateY(1px);
+      background: linear-gradient(180deg, #cdd8e6 0%, #e5ecf4 100%);
       box-shadow:
-        inset 0 2px 4px rgba(0,0,0,0.13),
-        inset 0 1px 2px rgba(0,0,0,0.08);
-      background: linear-gradient(180deg, #e8eef5 0%, #f4f7fb 100%);
+        inset 0 3px 6px rgba(0,0,0,0.16),
+        inset 0 1px 3px rgba(0,0,0,0.11);
     }
-    .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; }
+    .btn:disabled { opacity: 0.38; cursor: not-allowed; }
 
     .btn-primary {
-      background: linear-gradient(180deg, #5a9fd4 0%, #3475b0 100%);
-      border: 1px solid #2760a0;
-      color: #ffffff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.18);
+      background: linear-gradient(180deg, #2d66a0 0%, #4d8ec5 100%);
+      border: 1px solid #1f5580; border-top-color: #183f60;
+      color: #ffffff; text-shadow: 0 1px 1px rgba(0,0,0,0.25);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.28),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 2px 5px rgba(42,111,172,0.38),
-        0 3px 10px rgba(42,111,172,0.20);
+        inset 0 2px 5px rgba(0,0,0,0.30),
+        inset 0 1px 2px rgba(0,0,0,0.20),
+        0 1px 0 rgba(255,255,255,0.12);
     }
     .btn-primary:hover {
-      background: linear-gradient(180deg, #68aadb 0%, #3f82bc 100%);
+      background: linear-gradient(180deg, #335f93 0%, #5496ce 100%);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.32),
-        inset 0 -1px 0 rgba(0,0,0,0.20),
-        0 4px 12px rgba(42,111,172,0.46),
-        0 5px 18px rgba(42,111,172,0.22);
+        inset 0 1px 3px rgba(0,0,0,0.22),
+        inset 0 1px 1px rgba(0,0,0,0.14),
+        0 1px 0 rgba(255,255,255,0.10);
     }
     .btn-primary:active {
-      background: linear-gradient(180deg, #3475b0 0%, #5a9fd4 100%);
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.22), inset 0 1px 2px rgba(0,0,0,0.14);
+      background: linear-gradient(180deg, #23517d 0%, #3d7db8 100%);
+      box-shadow:
+        inset 0 3px 7px rgba(0,0,0,0.35),
+        inset 0 1px 3px rgba(0,0,0,0.22);
     }
 
     .btn-resume {
-      background: linear-gradient(180deg, rgba(71,138,194,0.16) 0%, rgba(71,138,194,0.08) 100%);
+      background: linear-gradient(180deg, rgba(71,138,194,0.22) 0%, rgba(71,138,194,0.10) 100%);
+      border: 1px solid var(--primary-border); border-top-color: rgba(71,138,194,0.50);
       color: var(--primary-dark);
-      border: 1px solid var(--primary-border);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.7),
-        inset 0 -1px 0 rgba(71,138,194,0.1),
-        0 1px 3px rgba(71,138,194,0.15);
+        inset 0 2px 4px rgba(71,138,194,0.18),
+        inset 0 1px 2px rgba(71,138,194,0.12),
+        0 1px 0 rgba(255,255,255,0.8);
     }
     .btn-resume:hover {
-      background: linear-gradient(180deg, rgba(71,138,194,0.24) 0%, rgba(71,138,194,0.14) 100%);
+      background: linear-gradient(180deg, rgba(71,138,194,0.16) 0%, rgba(71,138,194,0.08) 100%);
+      box-shadow: inset 0 1px 3px rgba(71,138,194,0.14), 0 1px 0 rgba(255,255,255,0.8);
     }
     .btn-resume:active {
-      background: linear-gradient(180deg, rgba(71,138,194,0.14) 0%, rgba(71,138,194,0.22) 100%);
-      box-shadow: inset 0 2px 4px rgba(71,138,194,0.2);
+      background: linear-gradient(180deg, rgba(71,138,194,0.28) 0%, rgba(71,138,194,0.14) 100%);
+      box-shadow: inset 0 3px 6px rgba(71,138,194,0.24);
     }
 
     .btn-stop {
-      background: linear-gradient(180deg, #fff5f5 0%, #fde8e8 100%);
+      background: linear-gradient(180deg, #f0d0d0 0%, #fde8e8 100%);
+      border: 1px solid rgba(220,38,38,0.30); border-top-color: rgba(220,38,38,0.40);
       color: var(--red);
-      border: 1px solid rgba(220,38,38,0.28);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.9),
-        inset 0 -1px 0 rgba(220,38,38,0.08),
-        0 1px 3px rgba(220,38,38,0.12);
+        inset 0 2px 4px rgba(220,38,38,0.16),
+        inset 0 1px 2px rgba(220,38,38,0.10),
+        0 1px 0 rgba(255,255,255,0.82);
     }
     .btn-stop:hover {
-      background: linear-gradient(180deg, #fde8e8 0%, #fbd5d5 100%);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.85),
-        0 3px 8px rgba(220,38,38,0.22);
+      background: linear-gradient(180deg, #f4d8d8 0%, #fde8e8 100%);
+      box-shadow: inset 0 1px 3px rgba(220,38,38,0.12), 0 1px 0 rgba(255,255,255,0.82);
     }
     .btn-stop:active {
-      background: linear-gradient(180deg, #fbd5d5 0%, #fde8e8 100%);
-      box-shadow: inset 0 2px 4px rgba(220,38,38,0.18);
+      background: linear-gradient(180deg, #e8c4c4 0%, #f9d8d8 100%);
+      box-shadow: inset 0 3px 6px rgba(220,38,38,0.22);
     }
 
     .btn-download {
-      background: linear-gradient(180deg, #ffffff 0%, #edf1f7 100%);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      text-decoration: none;
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      color: var(--text-muted); text-decoration: none;
       display: inline-flex; align-items: center; gap: 7px;
-      padding: 9px 18px;
-      font-size: 13px; font-weight: 600;
+      padding: 9px 18px; font-size: 13px; font-weight: 600;
       border-radius: var(--radius-pill);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 1px 3px rgba(0,0,0,0.10);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.88);
       transition: all var(--transition);
     }
     .btn-download:hover { color: var(--primary); border-color: var(--primary-border); }
     .btn-download svg { width: 14px; height: 14px; }
 
     /* ═══ Split panels ═══ */
-    .split-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px; margin-bottom: 18px;
-    }
+    .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
     @media (max-width: 960px) { .split-grid { grid-template-columns: 1fr; } }
-
     .panel { overflow: hidden; animation: fade-up 0.4s ease 0.22s both; }
-
     .panel-header {
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
-      background: #fafbfd;
-      border-radius: var(--radius) var(--radius) 0 0;
+      background: #f6f8fc; border-radius: var(--radius) var(--radius) 0 0;
     }
-    .panel-title {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.8px;
-      color: var(--text-dim);
-    }
+    .panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
     .panel-badge {
       padding: 2px 9px; border-radius: var(--radius-pill);
       background: var(--bg-inset); border: 1px solid var(--border);
@@ -390,16 +320,10 @@
     }
 
     /* ═══ Log ═══ */
-    .log-scroll {
-      height: 380px; overflow-y: auto;
-      padding: 12px 18px;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-      font-size: 11.5px; line-height: 1.85;
-    }
+    .log-scroll { height: 380px; overflow-y: auto; padding: 12px 18px; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 11.5px; line-height: 1.85; }
     .log-scroll::-webkit-scrollbar { width: 4px; }
     .log-scroll::-webkit-scrollbar-track { background: transparent; }
     .log-scroll::-webkit-scrollbar-thumb { background: #ccd6e0; border-radius: 2px; }
-
     .log-entry { display: flex; gap: 10px; animation: log-in 0.2s ease both; }
     @keyframes log-in {
       from { opacity: 0; transform: translateX(-6px); }
@@ -416,33 +340,18 @@
     .table-scroll { height: 380px; overflow-y: auto; }
     .table-scroll::-webkit-scrollbar { width: 4px; }
     .table-scroll::-webkit-scrollbar-thumb { background: #ccd6e0; border-radius: 2px; }
-
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     thead th {
       position: sticky; top: 0; z-index: 2;
-      background: #fafbfd;
-      padding: 10px 12px; text-align: left;
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.7px;
-      color: var(--text-dim);
-      border-bottom: 1px solid var(--border);
+      background: #f6f8fc; padding: 10px 12px; text-align: left;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+      color: var(--text-dim); border-bottom: 1px solid var(--border);
     }
-    tbody td {
-      padding: 9px 12px;
-      border-bottom: 1px solid #f0f4f8;
-      color: var(--text-muted);
-      max-width: 180px; overflow: hidden;
-      text-overflow: ellipsis; white-space: nowrap;
-    }
+    tbody td { padding: 9px 12px; border-bottom: 1px solid #f0f4f8; color: var(--text-muted); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     tbody tr:hover td { background: #f4f8fc; }
-
-    .type-badge {
-      padding: 2px 7px; border-radius: var(--radius-pill);
-      font-size: 10px; font-weight: 600;
-    }
+    .type-badge { padding: 2px 7px; border-radius: var(--radius-pill); font-size: 10px; font-weight: 600; }
     .type-personal { background: var(--green-dim); color: var(--green); }
     .type-generic  { background: var(--yellow-dim); color: var(--yellow); }
-
     .quality-bar { display: flex; gap: 3px; align-items: center; }
     .q-pip { width: 5px; height: 13px; border-radius: 2px; background: #dde4ed; }
     .q-pip.on     { background: var(--primary); }
@@ -450,137 +359,96 @@
     .q-pip.on.low { background: var(--red); }
 
     /* ═══ Section divider ═══ */
-    .section-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 26px 0 16px;
-    }
+    .section-divider { display: flex; align-items: center; gap: 12px; margin: 26px 0 16px; }
     .section-divider-line { flex: 1; height: 1px; background: var(--border); }
-    .section-divider-label {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1.2px;
-      color: var(--text-dim); white-space: nowrap;
-    }
+    .section-divider-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); white-space: nowrap; }
 
     /* ═══ DB Stats ═══ */
-    .db-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px; margin-bottom: 16px;
-      animation: fade-up 0.4s ease 0.05s both;
-    }
+    .db-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; animation: fade-up 0.4s ease 0.05s both; }
     @media (max-width: 700px) { .db-stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
     /* ═══ DB Panel ═══ */
     .db-panel { margin-bottom: 18px; animation: fade-up 0.4s ease 0.1s both; }
     .db-panel-header {
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-wrap: wrap; gap: 8px;
-      align-items: center; justify-content: space-between;
-      background: #fafbfd;
-      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+      background: #f6f8fc; border-radius: var(--radius) var(--radius) 0 0;
     }
     .filter-tabs { display: flex; gap: 5px; }
     .filter-tab {
       padding: 4px 11px; border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #fff 0%, #f4f7fb 100%);
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
       font-size: 11px; font-weight: 600; color: var(--text-muted);
       cursor: pointer; transition: all var(--transition);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 1px 2px rgba(0,0,0,0.08);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.85);
     }
-    .filter-tab:hover { border-color: var(--border-mid); }
+    .filter-tab:hover { background: linear-gradient(180deg, #dce5ef 0%, #eef2f8 100%); }
     .filter-tab.active {
-      border-color: var(--primary-border);
-      background: var(--primary-dim); color: var(--primary-dark);
-      box-shadow: inset 0 1px 2px rgba(71,138,194,0.12);
+      border-color: var(--primary-border); border-top-color: rgba(71,138,194,0.50);
+      background: linear-gradient(180deg, rgba(71,138,194,0.22) 0%, rgba(71,138,194,0.10) 100%);
+      color: var(--primary-dark);
+      box-shadow: inset 0 2px 4px rgba(71,138,194,0.18), 0 1px 0 rgba(255,255,255,0.7);
     }
-    .filter-tab.sent   { border-color: rgba(22,163,74,.3);   background: var(--green-dim); color: var(--green); }
-    .filter-tab.failed { border-color: rgba(220,38,38,.3);   background: var(--red-dim);   color: var(--red); }
-    .pagination-row {
-      display: flex; gap: 6px; align-items: center;
-      font-size: 12px; color: var(--text-muted);
-    }
+    .filter-tab.sent   { border-color: rgba(22,163,74,.35); background: linear-gradient(180deg, rgba(22,163,74,.18) 0%, rgba(22,163,74,.08) 100%); color: var(--green); box-shadow: inset 0 2px 3px rgba(22,163,74,.15), 0 1px 0 rgba(255,255,255,0.7); }
+    .filter-tab.failed { border-color: rgba(220,38,38,.35); background: linear-gradient(180deg, rgba(220,38,38,.18) 0%, rgba(220,38,38,.08) 100%); color: var(--red);   box-shadow: inset 0 2px 3px rgba(220,38,38,.15), 0 1px 0 rgba(255,255,255,0.7); }
+
+    .pagination-row { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-muted); }
     .pg-btn {
       width: 26px; height: 26px; border-radius: 6px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #fff 0%, #f0f4f9 100%);
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
       color: var(--text-muted); cursor: pointer; font-size: 14px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 1px 2px rgba(0,0,0,0.08);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.85);
       transition: all var(--transition);
     }
-    .pg-btn:hover:not(:disabled) { border-color: var(--primary-border); color: var(--primary); }
+    .pg-btn:hover:not(:disabled) { color: var(--primary); border-color: var(--primary-border); }
     .pg-btn:disabled { opacity: 0.3; cursor: default; }
     .db-table-scroll { height: 420px; overflow-y: auto; }
     .db-table-scroll::-webkit-scrollbar { width: 4px; }
     .db-table-scroll::-webkit-scrollbar-thumb { background: #ccd6e0; border-radius: 2px; }
-
-    .status-badge {
-      padding: 2px 7px; border-radius: var(--radius-pill);
-      font-size: 10px; font-weight: 600;
-    }
+    .status-badge { padding: 2px 7px; border-radius: var(--radius-pill); font-size: 10px; font-weight: 600; }
     .status-unsent  { background: #f0f4f8; color: var(--text-dim); }
     .status-sent    { background: var(--green-dim); color: var(--green); }
     .status-failed  { background: var(--red-dim);   color: var(--red); }
 
     /* ═══ Email Outreach ═══ */
-    .email-section {
-      padding: 26px; margin-bottom: 18px;
-      animation: fade-up 0.4s ease 0.08s both;
-    }
-    .email-section-header {
-      font-size: 14px; font-weight: 700; margin-bottom: 20px;
-      display: flex; align-items: center; gap: 8px; color: var(--text);
-    }
-    .email-section-header::before {
-      content: ''; width: 3px; height: 15px;
-      background: var(--primary); border-radius: 2px;
-    }
+    .email-section { padding: 26px; margin-bottom: 18px; animation: fade-up 0.4s ease 0.08s both; }
+    .email-section-header { font-size: 14px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+    .email-section-header::before { content: ''; width: 3px; height: 15px; background: var(--primary); border-radius: 2px; }
     .smtp-toggle {
       display: flex; align-items: center; gap: 8px;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .8px;
-      color: var(--text-muted); cursor: pointer; padding: 10px 0;
-      user-select: none; border-bottom: 1px solid var(--border);
-      transition: color var(--transition);
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+      color: var(--text-muted); cursor: pointer; padding: 10px 0; user-select: none;
+      border-bottom: 1px solid var(--border); transition: color var(--transition);
     }
     .smtp-toggle:hover { color: var(--primary); }
     .smtp-toggle-arrow { transition: transform var(--transition); }
     .smtp-toggle.open .smtp-toggle-arrow { transform: rotate(180deg); }
     .smtp-form-body { padding-top: 16px; margin-bottom: 16px; display: none; }
     .smtp-form-body.open { display: block; }
-    .smtp-form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px; margin-bottom: 14px;
-    }
+    .smtp-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
     .test-email-row {
       display: flex; gap: 10px; align-items: flex-end;
-      margin-top: 14px; padding-top: 14px;
-      border-top: 1px solid var(--border);
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
     }
     .test-email-row .form-group { flex: 1; }
 
     .template-section { margin-top: 22px; }
     .template-section label {
       display: block; font-size: 11px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: .7px;
-      color: var(--text-muted); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); margin-bottom: 6px;
     }
-    .template-hint {
-      font-size: 10px; color: var(--text-dim);
-      font-weight: 400; text-transform: none; letter-spacing: 0;
-    }
+    .template-hint { font-size: 10px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
     .template-section input,
     .template-section textarea {
       width: 100%; padding: 10px 13px;
-      background: var(--bg-inset); border: 1px solid var(--border);
+      background: var(--bg-inset); border: 1px solid var(--border); border-top-color: var(--border-mid);
       border-radius: var(--radius-sm); color: var(--text);
-      font-family: 'Inter', sans-serif; font-size: 13px;
-      outline: none; resize: vertical; transition: all var(--transition);
-      margin-bottom: 12px; box-sizing: border-box;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none; resize: vertical;
+      transition: all var(--transition); margin-bottom: 12px; box-sizing: border-box;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.07), inset 0 1px 2px rgba(0,0,0,0.05);
     }
     .template-section input:focus,
     .template-section textarea:focus {
@@ -593,40 +461,28 @@
     .send-stats-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
     .send-stat { text-align: center; min-width: 65px; }
     .send-stat .s-val { font-size: 26px; font-weight: 800; line-height: 1; color: var(--text); }
-    .send-stat .s-lbl {
-      font-size: 10px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: .7px; color: var(--text-muted); margin-top: 3px;
-    }
+    .send-stat .s-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); margin-top: 3px; }
     .send-stat .s-val.cyan   { color: var(--primary); }
     .send-stat .s-val.green  { color: var(--green); }
     .send-stat .s-val.yellow { color: var(--yellow); }
     .send-stat .s-val.red    { color: var(--red); }
-
-    .delay-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
-      flex-wrap: wrap;
-    }
+    .delay-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; color: var(--text-muted); flex-wrap: wrap; }
     .delay-row input[type=number] {
       width: 68px; padding: 7px 10px;
-      background: var(--bg-inset); border: 1px solid var(--border);
+      background: var(--bg-inset); border: 1px solid var(--border); border-top-color: var(--border-mid);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); transition: all var(--transition);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.08); transition: all var(--transition);
     }
-    .delay-row input:focus {
-      border-color: var(--primary);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 3px var(--primary-dim);
-    }
-
+    .delay-row input:focus { border-color: var(--primary); box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 3px var(--primary-dim); }
     .email-progress { margin-top: 16px; }
     .email-log {
       height: 180px; overflow-y: auto; padding: 10px 14px;
-      background: var(--bg-inset); border: 1px solid var(--border);
+      background: var(--bg-inset); border: 1px solid var(--border); border-top-color: var(--border-mid);
       border-radius: var(--radius-sm);
       font-family: 'SF Mono', 'Fira Code', monospace;
       font-size: 11px; line-height: 1.8; margin-top: 10px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.07);
     }
     .email-log::-webkit-scrollbar { width: 3px; }
     .email-log::-webkit-scrollbar-thumb { background: #ccd6e0; border-radius: 2px; }
@@ -634,6 +490,98 @@
     .el-failed { color: var(--red); }
     .el-info  { color: var(--text-muted); }
     .el-phase { color: var(--primary-dark); font-weight: 600; }
+
+    /* ═══ Email Preview Modal ═══ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20,30,50,0.38);
+      z-index: 500;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #ffffff; border-radius: 16px;
+      width: 100%; max-width: 640px; max-height: 90vh;
+      overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10);
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: #f6f8fc;
+    }
+    .modal-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
+      color: var(--text-muted); font-size: 16px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.85);
+      transition: all var(--transition);
+    }
+    .modal-close:hover { color: var(--red); border-color: rgba(220,38,38,0.3); }
+
+    /* Email client preview frame */
+    .email-preview-wrap { overflow-y: auto; flex: 1; background: #f0f4f8; }
+    .email-client-chrome {
+      background: #ffffff;
+      margin: 16px;
+      border-radius: 10px;
+      border: 1px solid #d0d8e4;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .ep-subject-bar {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid #e8ecf2;
+    }
+    .ep-subject-text {
+      font-size: 18px; font-weight: 700; color: #1a1a2e;
+      line-height: 1.3; word-break: break-word;
+    }
+    .ep-meta-block {
+      padding: 12px 22px 14px;
+      border-bottom: 1px solid #e8ecf2;
+      background: #fafbfd;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .ep-meta-row { display: flex; gap: 0; font-size: 12.5px; line-height: 1.5; }
+    .ep-meta-key { color: #888ea8; font-weight: 600; min-width: 48px; }
+    .ep-meta-val { color: #333d55; }
+    .ep-avatar-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 22px; border-bottom: 1px solid #e8ecf2;
+    }
+    .ep-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #2d66a0, #60a5fa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+    .ep-sender-info { display: flex; flex-direction: column; }
+    .ep-sender-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+    .ep-sender-addr { font-size: 11.5px; color: #888ea8; }
+    .ep-date-badge {
+      margin-left: auto; font-size: 11.5px; color: #aab4c8;
+      white-space: nowrap; align-self: center;
+    }
+    .ep-body-area {
+      padding: 24px 26px 32px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
+      font-size: 14px; line-height: 1.75; color: #1a1a2e;
+      min-height: 160px;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .ep-footer {
+      padding: 10px 20px;
+      border-top: 1px solid var(--border);
+      background: #f6f8fc;
+      font-size: 11px; color: var(--text-dim); font-style: italic;
+    }
 
     /* ═══ Notification toast ═══ */
     .notification {
@@ -647,12 +595,7 @@
     .notification.error   { background: #fff5f5; border: 1px solid rgba(220,38,38,.3);  color: var(--red); }
     .notification.info    { background: #eff6ff; border: 1px solid var(--primary-border); color: var(--primary-dark); }
 
-    /* ═══ Empty state ═══ */
-    .empty-state {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; height: 180px;
-      color: var(--text-dim); font-size: 13px;
-    }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px; color: var(--text-dim); font-size: 13px; }
     .empty-state svg { width: 36px; height: 36px; margin-bottom: 10px; opacity: 0.25; }
   </style>
 </head>
@@ -673,67 +616,35 @@
 
   <!-- Stats -->
   <div class="stats-grid">
-    <div class="stat-card glass">
-      <div class="label">Leads Found</div>
-      <div class="value teal" id="statLeads">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Personal Emails</div>
-      <div class="value green" id="statPersonal">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Generic Emails</div>
-      <div class="value yellow" id="statGeneric">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Domains Scraped</div>
-      <div class="value" id="statDomains">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Time Elapsed</div>
-      <div class="value" id="statTime" style="font-size: 22px;">0s</div>
-    </div>
+    <div class="stat-card glass"><div class="label">Leads Found</div><div class="value teal" id="statLeads">0</div></div>
+    <div class="stat-card glass"><div class="label">Personal Emails</div><div class="value green" id="statPersonal">0</div></div>
+    <div class="stat-card glass"><div class="label">Generic Emails</div><div class="value yellow" id="statGeneric">0</div></div>
+    <div class="stat-card glass"><div class="label">Domains Scraped</div><div class="value" id="statDomains">0</div></div>
+    <div class="stat-card glass"><div class="label">Time Elapsed</div><div class="value" id="statTime" style="font-size:22px">0s</div></div>
   </div>
 
   <!-- Progress -->
   <div class="progress-section glass">
     <div class="progress-top">
-      <div class="phase-badge">
-        <div class="phase-dot" id="phaseDot"></div>
-        <span id="phaseLabel">Idle</span>
-      </div>
+      <div class="phase-badge"><div class="phase-dot" id="phaseDot"></div><span id="phaseLabel">Idle</span></div>
       <span class="progress-count" id="progressCount">0 / 0</span>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
 
   <!-- Controls -->
   <div class="controls-section glass-strong">
     <div class="controls-header">Configuration</div>
-
     <div class="form-grid">
-      <div class="form-group">
-        <label>Target Leads</label>
-        <input type="number" id="inputTarget" value="2000" min="1" max="10000">
-      </div>
-      <div class="form-group">
-        <label>ICP Segment</label>
-        <select id="inputIndustry"><option value="">All Segments</option></select>
-      </div>
-      <div class="form-group">
-        <label>Region</label>
-        <select id="inputLocation"><option value="">All Regions</option></select>
-      </div>
+      <div class="form-group"><label>Target Leads</label><input type="number" id="inputTarget" value="2000" min="1" max="10000"></div>
+      <div class="form-group"><label>ICP Segment</label><select id="inputIndustry"><option value="">All Segments</option></select></div>
+      <div class="form-group"><label>Region</label><select id="inputLocation"><option value="">All Regions</option></select></div>
     </div>
-
-    <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); display: block; margin-bottom: 10px;">Sources</label>
+    <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);display:block;margin-bottom:10px;">Sources</label>
     <div class="source-row" id="sourceRow">
       <label class="source-chip active" data-source="duckduckgo"><input type="checkbox" value="duckduckgo" checked><div class="source-dot"></div>DuckDuckGo</label>
       <label class="source-chip active" data-source="bing"><input type="checkbox" value="bing" checked><div class="source-dot"></div>Bing</label>
     </div>
-
     <div class="btn-row">
       <button class="btn btn-primary" id="btnStart">Start Scraping</button>
       <button class="btn btn-resume" id="btnResume">Resume</button>
@@ -744,28 +655,14 @@
   <!-- Log + Leads -->
   <div class="split-grid">
     <div class="panel glass">
-      <div class="panel-header">
-        <span class="panel-title">Activity Log</span>
-        <span class="panel-badge" id="logCount">0</span>
-      </div>
+      <div class="panel-header"><span class="panel-title">Activity Log</span><span class="panel-badge" id="logCount">0</span></div>
       <div class="log-scroll" id="logContent"></div>
     </div>
     <div class="panel glass">
-      <div class="panel-header">
-        <span class="panel-title">Recent Leads</span>
-        <span class="panel-badge" id="leadTableCount">0</span>
-      </div>
+      <div class="panel-header"><span class="panel-title">Recent Leads</span><span class="panel-badge" id="leadTableCount">0</span></div>
       <div class="table-scroll">
         <table>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Company</th>
-              <th>Type</th>
-              <th>Quality</th>
-              <th>Source</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Email</th><th>Company</th><th>Type</th><th>Quality</th><th>Source</th></tr></thead>
           <tbody id="leadsBody"></tbody>
         </table>
       </div>
@@ -773,33 +670,15 @@
   </div>
 
   <!-- ════════ DATABASE SECTION ════════ -->
-  <div class="section-divider">
-    <div class="section-divider-line"></div>
-    <div class="section-divider-label">Lead Database</div>
-    <div class="section-divider-line"></div>
-  </div>
+  <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Lead Database</div><div class="section-divider-line"></div></div>
 
-  <!-- DB Stats -->
   <div class="db-stats-grid">
-    <div class="stat-card glass">
-      <div class="label">Total in DB</div>
-      <div class="value teal" id="dbTotal">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Unsent</div>
-      <div class="value" id="dbUnsent">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Sent</div>
-      <div class="value green" id="dbSent">0</div>
-    </div>
-    <div class="stat-card glass">
-      <div class="label">Failed</div>
-      <div class="value" style="color:var(--red)" id="dbFailed">0</div>
-    </div>
+    <div class="stat-card glass"><div class="label">Total in DB</div><div class="value teal" id="dbTotal">0</div></div>
+    <div class="stat-card glass"><div class="label">Unsent</div><div class="value" id="dbUnsent">0</div></div>
+    <div class="stat-card glass"><div class="label">Sent</div><div class="value green" id="dbSent">0</div></div>
+    <div class="stat-card glass"><div class="label">Failed</div><div class="value" style="color:var(--red)" id="dbFailed">0</div></div>
   </div>
 
-  <!-- DB Leads Table -->
   <div class="db-panel glass">
     <div class="db-panel-header">
       <span class="panel-title">All Leads</span>
@@ -817,30 +696,14 @@
     </div>
     <div class="db-table-scroll">
       <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Company</th>
-            <th>Industry</th>
-            <th>Location</th>
-            <th>Type</th>
-            <th>Q</th>
-            <th>Status</th>
-            <th>Sent At</th>
-            <th>Source</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Email</th><th>Company</th><th>Industry</th><th>Location</th><th>Type</th><th>Q</th><th>Status</th><th>Sent At</th><th>Source</th></tr></thead>
         <tbody id="dbLeadsBody"></tbody>
       </table>
     </div>
   </div>
 
   <!-- ════════ EMAIL OUTREACH SECTION ════════ -->
-  <div class="section-divider">
-    <div class="section-divider-line"></div>
-    <div class="section-divider-label">Email Outreach</div>
-    <div class="section-divider-line"></div>
-  </div>
+  <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Email Outreach</div><div class="section-divider-line"></div></div>
 
   <div class="email-section glass-strong">
     <div class="email-section-header">Resend + Outreach</div>
@@ -853,29 +716,16 @@
     </div>
     <div class="smtp-form-body" id="smtpFormBody">
       <div class="smtp-form-grid">
-        <div class="form-group">
-          <label>API Key</label>
-          <input type="password" id="resendApiKey" placeholder="re_xxxxxxxxxxxxxxxxxx">
-        </div>
-        <div class="form-group">
-          <label>From Name</label>
-          <input id="resendFromName" placeholder="Martin">
-        </div>
-        <div class="form-group">
-          <label>From Email</label>
-          <input id="resendFromEmail" placeholder="martin@preemo.club">
-        </div>
+        <div class="form-group"><label>API Key</label><input type="password" id="resendApiKey" placeholder="re_xxxxxxxxxxxxxxxxxx"></div>
+        <div class="form-group"><label>From Name</label><input id="resendFromName" placeholder="Martin"></div>
+        <div class="form-group"><label>From Email</label><input id="resendFromEmail" placeholder="martin@preemo.club"></div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="btnSaveSmtp">Save Config</button>
         <button class="btn btn-resume" id="btnTestSmtp">Test Connection</button>
       </div>
-      <!-- Test Email Row -->
       <div class="test-email-row">
-        <div class="form-group">
-          <label>Send Test Email To</label>
-          <input type="email" id="testEmailTo" placeholder="you@example.com">
-        </div>
+        <div class="form-group"><label>Send Test Email To</label><input type="email" id="testEmailTo" placeholder="you@example.com"></div>
         <button class="btn btn-resume" id="btnTestEmail">Send Test</button>
       </div>
     </div>
@@ -891,36 +741,28 @@
       <textarea id="emailBody" placeholder="Hi {{firstName}},
 
 I noticed {{companyName}} is producing a serious volume of ad creative..."></textarea>
-      <button class="btn btn-primary" id="btnSaveTemplate">Save Template</button>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnSaveTemplate">Save Template</button>
+        <button class="btn btn-resume" id="btnPreviewEmail">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          Preview Email
+        </button>
+      </div>
     </div>
 
     <!-- Send Controls -->
     <div class="send-controls">
       <div class="send-stats-row">
-        <div class="send-stat">
-          <div class="s-val cyan" id="sendTotal">0</div>
-          <div class="s-lbl">Total Unsent</div>
-        </div>
-        <div class="send-stat">
-          <div class="s-val green" id="sendSent">0</div>
-          <div class="s-lbl">Sent</div>
-        </div>
-        <div class="send-stat">
-          <div class="s-val yellow" id="sendProgress">0</div>
-          <div class="s-lbl">Remaining</div>
-        </div>
-        <div class="send-stat">
-          <div class="s-val red" id="sendFailed">0</div>
-          <div class="s-lbl">Failed</div>
-        </div>
+        <div class="send-stat"><div class="s-val cyan" id="sendTotal">0</div><div class="s-lbl">Total Unsent</div></div>
+        <div class="send-stat"><div class="s-val green" id="sendSent">0</div><div class="s-lbl">Sent</div></div>
+        <div class="send-stat"><div class="s-val yellow" id="sendProgress">0</div><div class="s-lbl">Remaining</div></div>
+        <div class="send-stat"><div class="s-val red" id="sendFailed">0</div><div class="s-lbl">Failed</div></div>
       </div>
-
       <div class="delay-row">
         <span>Delay between emails:</span>
         <input type="number" id="sendDelay" value="5" min="1" max="120">
         <span>seconds</span>
       </div>
-
       <div class="btn-row">
         <button class="btn btn-primary" id="btnSendUnsent">
           <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
@@ -928,15 +770,12 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
         </button>
         <button class="btn btn-stop" id="btnStopSend" disabled>Stop Sending</button>
       </div>
-
       <div class="email-progress" id="emailProgressSection" style="display:none">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:12px;color:var(--text-muted)" id="emailProgressLabel">Sending...</span>
           <span style="font-size:12px;color:var(--text-muted)" id="emailProgressPct">0%</span>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="emailProgressFill" style="width:0%"></div>
-        </div>
+        <div class="progress-track"><div class="progress-fill" id="emailProgressFill" style="width:0%"></div></div>
         <div class="email-log" id="emailLog"></div>
       </div>
     </div>
@@ -944,12 +783,45 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
 
 </div>
 
+<!-- ════════ EMAIL PREVIEW MODAL ════════ -->
+<div class="modal-overlay" id="emailPreviewModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Email Preview — as the recipient sees it</span>
+      <button class="modal-close" id="btnClosePreview">×</button>
+    </div>
+    <div class="email-preview-wrap">
+      <div class="email-client-chrome">
+        <!-- Subject bar -->
+        <div class="ep-subject-bar">
+          <div class="ep-subject-text" id="epSubject">—</div>
+        </div>
+        <!-- Sender row -->
+        <div class="ep-avatar-row">
+          <div class="ep-avatar" id="epAvatarInitial">M</div>
+          <div class="ep-sender-info">
+            <div class="ep-sender-name" id="epSenderName">Martin</div>
+            <div class="ep-sender-addr" id="epSenderAddr">martin@preemo.club</div>
+          </div>
+          <div class="ep-date-badge" id="epDate">—</div>
+        </div>
+        <!-- Meta: To -->
+        <div class="ep-meta-block">
+          <div class="ep-meta-row"><span class="ep-meta-key">To</span><span class="ep-meta-val" id="epTo">Alex Johnson &lt;alex@acmecorp.com&gt;</span></div>
+        </div>
+        <!-- Body -->
+        <div class="ep-body-area" id="epBody"></div>
+      </div>
+    </div>
+    <div class="ep-footer">Sample data: Alex Johnson · Acme Corp · Technology · Sydney, Australia</div>
+  </div>
+</div>
+
 <script>
   const $ = id => document.getElementById(id);
   let eventSource = null;
   let logLines = 0;
 
-  // Source chip toggle
   document.querySelectorAll('.source-chip').forEach(chip => {
     chip.addEventListener('click', (e) => {
       e.preventDefault();
@@ -959,7 +831,6 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     });
   });
 
-  // Load options
   fetch('/api/options').then(r => r.json()).then(data => {
     const indSel = $('inputIndustry');
     data.industries.forEach(i => {
@@ -975,7 +846,6 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     });
   });
 
-  // Status on load
   fetch('/api/status').then(r => r.json()).then(s => {
     if (s.running) { setRunningUI(true); updateStats(s); }
   });
@@ -1002,14 +872,11 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     animateValue($('statGeneric'), s.genericCount || 0);
     animateValue($('statDomains'), s.domainsScraped || 0);
     $('statTime').textContent = formatTime(s.elapsed || 0);
-
     const pct = Math.min(100, Math.round(((s.leadCount || 0) / (s.target || 1)) * 100));
     $('progressFill').style.width = pct + '%';
     $('phaseLabel').textContent = phaseText(s.phase);
     $('progressCount').textContent = `${s.leadCount || 0} / ${s.target || 0}`;
-
-    const dot = $('phaseDot');
-    dot.classList.toggle('active', s.running);
+    $('phaseDot').classList.toggle('active', s.running);
   }
 
   function animateValue(el, newVal) {
@@ -1081,8 +948,7 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   async function startScraper(resume) {
     const body = {
       target: parseInt($('inputTarget').value, 10) || 2000,
-      resume,
-      sources: getSelectedSources(),
+      resume, sources: getSelectedSources(),
       industry: $('inputIndustry').value || null,
       location: $('inputLocation').value || null
     };
@@ -1090,8 +956,7 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
       const r = await fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const d = await r.json();
       if (!r.ok) { addLog({ type: 'error', message: d.error || 'Failed to start' }); return; }
-      setRunningUI(true);
-      connectSSE();
+      setRunningUI(true); connectSSE();
       addLog({ type: 'phase', message: `Starting — target ${body.target} leads` });
     } catch (err) { addLog({ type: 'error', message: 'Network error: ' + err.message }); }
   }
@@ -1099,13 +964,14 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   $('btnStart').addEventListener('click', () => startScraper(false));
   $('btnResume').addEventListener('click', () => startScraper(true));
   $('btnStop').addEventListener('click', async () => {
-    try { await fetch('/api/stop', { method: 'POST' }); addLog({ type: 'warn', message: 'Stop requested...' }); } catch (e) { addLog({ type: 'error', message: e.message }); }
+    try { await fetch('/api/stop', { method: 'POST' }); addLog({ type: 'warn', message: 'Stop requested...' }); }
+    catch (e) { addLog({ type: 'error', message: e.message }); }
   });
 
   connectSSE();
 
   // ════════════════════════════════════════════════════════════════
-  // DATABASE + EMAIL OUTREACH
+  // DATABASE
   // ════════════════════════════════════════════════════════════════
 
   function refreshDbStats() {
@@ -1122,13 +988,12 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   refreshDbStats();
   setInterval(refreshDbStats, 5000);
 
-  let dbPage   = 1;
-  let dbFilter = '';
+  let dbPage = 1, dbFilter = '';
 
   function renderDbRow(lead) {
     const statusCls = { sent: 'status-sent', failed: 'status-failed', unsent: 'status-unsent' }[lead.email_status] || 'status-unsent';
     const typeCls   = lead.email_type === 'personal' ? 'type-personal' : 'type-generic';
-    const sentAt    = lead.email_sent_at ? lead.email_sent_at.slice(0, 16).replace('T', ' ') : '—';
+    const sentAt    = lead.email_sent_at ? lead.email_sent_at.slice(0,16).replace('T',' ') : '—';
     return `<tr>
       <td title="${esc(lead.email)}">${esc(lead.email)}</td>
       <td title="${esc(lead.company_name)}">${esc(lead.company_name || '—')}</td>
@@ -1152,8 +1017,7 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
         tbody.innerHTML = data.items.map(renderDbRow).join('');
       }
       $('pgInfo').textContent = data.total > 0
-        ? `${(dbPage - 1) * 50 + 1}–${Math.min(dbPage * 50, data.total)} of ${data.total}`
-        : '0 leads';
+        ? `${(dbPage-1)*50+1}–${Math.min(dbPage*50,data.total)} of ${data.total}` : '0 leads';
       $('pgPrev').disabled = dbPage <= 1;
       $('pgNext').disabled = dbPage >= (data.pages || 1);
     }).catch(() => {});
@@ -1165,18 +1029,17 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     tab.addEventListener('click', () => {
       document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      dbFilter = tab.dataset.status;
-      dbPage   = 1;
-      loadDbLeads();
+      dbFilter = tab.dataset.status; dbPage = 1; loadDbLeads();
     });
   });
 
   $('pgPrev').addEventListener('click', () => { dbPage--; loadDbLeads(); });
   $('pgNext').addEventListener('click', () => { dbPage++; loadDbLeads(); });
-
   document.addEventListener('helix:newlead', () => { loadDbLeads(); refreshDbStats(); });
 
-  // ── Resend Config ─────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // EMAIL OUTREACH
+  // ════════════════════════════════════════════════════════════════
 
   $('smtpToggle').addEventListener('click', () => {
     $('smtpToggle').classList.toggle('open');
@@ -1204,25 +1067,16 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   });
 
   // ── Test Email ────────────────────────────────────────────────
-
   $('btnTestEmail').addEventListener('click', async () => {
     const to = $('testEmailTo').value.trim();
     if (!to) { notify('Enter a recipient email address', 'error'); return; }
     const subject = $('emailSubject').value.trim() || 'Test Email from Preemo Leads';
-    const bodyText = ($('emailBody').value || 'This is a test email.')
-      .replace(/\{\{firstName\}\}/g, 'Alex')
-      .replace(/\{\{ownerName\}\}/g, 'Alex Johnson')
-      .replace(/\{\{companyName\}\}/g, 'Acme Corp')
-      .replace(/\{\{website\}\}/g, 'acmecorp.com')
-      .replace(/\{\{industry\}\}/g, 'Technology')
-      .replace(/\{\{location\}\}/g, 'Sydney, Australia');
-    const html = bodyText.replace(/\n/g, '<br>');
+    const bodyText = renderTemplate($('emailBody').value || 'This is a test email.', PREVIEW_VARS);
     notify('Sending test email...', 'info');
     try {
       const r = await fetch('/api/mail/send-single', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to, subject, html })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, subject: renderTemplate(subject, PREVIEW_VARS), html: bodyText.replace(/\n/g,'<br>') })
       });
       const d = await r.json();
       notify(r.ok ? `Test email sent to ${to}` : d.error, r.ok ? 'success' : 'error');
@@ -1230,7 +1084,6 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   });
 
   // ── Email Template ─────────────────────────────────────────────
-
   fetch('/api/resend/template').then(r => r.json()).then(t => {
     if (t.subject) $('emailSubject').value = t.subject;
     if (t.body)    $('emailBody').value    = t.body;
@@ -1243,46 +1096,85 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
   });
 
-  // ── Email Sending ──────────────────────────────────────────────
+  // ── Email Preview ──────────────────────────────────────────────
+  const PREVIEW_VARS = {
+    firstName:   'Alex',
+    ownerName:   'Alex Johnson',
+    companyName: 'Acme Corp',
+    website:     'acmecorp.com',
+    industry:    'Technology',
+    location:    'Sydney, Australia'
+  };
 
+  function renderTemplate(tpl, vars) {
+    return tpl.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, k) => vars[k] ?? `{{${k}}}`);
+  }
+
+  $('btnPreviewEmail').addEventListener('click', async () => {
+    const subject  = renderTemplate($('emailSubject').value || '(no subject)', PREVIEW_VARS);
+    const bodyText = renderTemplate($('emailBody').value || '', PREVIEW_VARS);
+
+    // Pull sender info from loaded form fields (already populated from API)
+    const fromName  = $('resendFromName').value.trim()  || 'Martin';
+    const fromEmail = $('resendFromEmail').value.trim()  || 'martin@preemo.club';
+    const initial   = (fromName[0] || 'M').toUpperCase();
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+      + ', ' + now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    $('epSubject').textContent     = subject;
+    $('epAvatarInitial').textContent = initial;
+    $('epSenderName').textContent  = fromName;
+    $('epSenderAddr').textContent  = fromEmail;
+    $('epDate').textContent        = dateStr;
+    $('epTo').textContent          = `Alex Johnson <alex@acmecorp.com>`;
+    $('epBody').textContent        = bodyText;
+
+    $('emailPreviewModal').classList.add('open');
+  });
+
+  $('btnClosePreview').addEventListener('click', () => {
+    $('emailPreviewModal').classList.remove('open');
+  });
+  $('emailPreviewModal').addEventListener('click', e => {
+    if (e.target === $('emailPreviewModal')) $('emailPreviewModal').classList.remove('open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') $('emailPreviewModal').classList.remove('open');
+  });
+
+  // ── Email Sending ──────────────────────────────────────────────
   let emailEventSource = null;
 
   function connectEmailSSE() {
     if (emailEventSource) emailEventSource.close();
     emailEventSource = new EventSource('/api/email/events');
-
     emailEventSource.addEventListener('emailStatus', e => {
       const d = JSON.parse(e.data);
       if (d.running) setEmailRunningUI(true);
     });
-
     emailEventSource.addEventListener('emailStart', e => {
       const d = JSON.parse(e.data);
       $('emailProgressSection').style.display = 'block';
       addEmailLog(`Starting — ${d.total} unsent leads queued`, 'phase');
       setEmailRunningUI(true);
     });
-
     emailEventSource.addEventListener('emailSent', e => {
       const d = JSON.parse(e.data);
       updateEmailProgress(d);
       addEmailLog(`✓ ${d.email}${d.company ? ` (${d.company})` : ''}`, 'sent');
     });
-
     emailEventSource.addEventListener('emailFailed', e => {
       const d = JSON.parse(e.data);
       updateEmailProgress(d);
       addEmailLog(`✗ ${d.email} — ${d.error}`, 'failed');
     });
-
     emailEventSource.addEventListener('emailDone', e => {
       const d = JSON.parse(e.data);
       addEmailLog(`${d.aborted ? 'Stopped' : 'Complete'} — ${d.sent} sent, ${d.failed} failed`, 'phase');
-      setEmailRunningUI(false);
-      refreshDbStats();
-      loadDbLeads();
+      setEmailRunningUI(false); refreshDbStats(); loadDbLeads();
     });
-
     emailEventSource.addEventListener('emailError', e => {
       try { addEmailLog(JSON.parse(e.data).message, 'failed'); } catch {}
       setEmailRunningUI(false);
@@ -1319,8 +1211,7 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     $('emailLog').innerHTML = '';
     $('emailProgressFill').style.width = '0%';
     const r = await fetch('/api/email/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ delaySeconds: parseInt($('sendDelay').value, 10) || 5 })
     });
     const d = await r.json();
@@ -1337,7 +1228,6 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   connectEmailSSE();
 
   // ── Notification toast ─────────────────────────────────────────
-
   function notify(msg, type = 'info') {
     const el = document.createElement('div');
     el.className = `notification ${type}`;
@@ -1346,7 +1236,6 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     setTimeout(() => el.remove(), 4000);
   }
 
-  // Emit custom event when scraper finds a lead so DB table auto-refreshes
   const _origAddLeadRow = addLeadRow;
   function addLeadRow(lead) {
     _origAddLeadRow(lead);
