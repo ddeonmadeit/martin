@@ -2,3 +2,4 @@ node_modules/
 output/Helix Leads.csv
 output/errors.log
 .env
+*.db

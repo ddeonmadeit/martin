@@ -636,6 +636,284 @@
     }
 
     .empty-state svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.3; }
+
+    /* ═══ Section divider ═══ */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 32px 0 20px;
+      animation: fade-up 0.5s ease both;
+    }
+    .section-divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-divider-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ═══ DB Stats ═══ */
+    .db-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+      animation: fade-up 0.5s ease 0.05s both;
+    }
+    @media (max-width: 700px) { .db-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ═══ DB Leads Table ═══ */
+    .db-panel {
+      margin-bottom: 24px;
+      animation: fade-up 0.5s ease 0.1s both;
+    }
+    .db-panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .filter-tab {
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: var(--bg-glass);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .filter-tab:hover { border-color: var(--border-light); }
+    .filter-tab.active { border-color: var(--primary-border); background: var(--primary-dim); color: var(--primary); }
+    .filter-tab.sent   { border-color: rgba(63,185,80,.3);  background: var(--green-dim);   color: var(--green); }
+    .filter-tab.failed { border-color: rgba(248,81,73,.3);  background: var(--red-dim);     color: var(--red); }
+    .pagination-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .pg-btn {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-glass);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+    }
+    .pg-btn:hover:not(:disabled) { border-color: var(--primary-border); color: var(--primary); }
+    .pg-btn:disabled { opacity: 0.3; cursor: default; }
+    .db-table-scroll { height: 420px; overflow-y: auto; }
+    .db-table-scroll::-webkit-scrollbar { width: 4px; }
+    .db-table-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+    .status-badge {
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .status-unsent  { background: rgba(255,255,255,.06); color: var(--text-dim); }
+    .status-sent    { background: var(--green-dim); color: var(--green); }
+    .status-failed  { background: var(--red-dim); color: var(--red); }
+
+    /* ═══ Email Outreach ═══ */
+    .email-section {
+      padding: 28px;
+      margin-bottom: 24px;
+      animation: fade-up 0.5s ease 0.15s both;
+    }
+    .email-section-header {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .email-section-header::before {
+      content: '';
+      width: 3px; height: 16px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .smtp-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 10px 0;
+      user-select: none;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      transition: color var(--transition);
+    }
+    .smtp-toggle:hover { color: var(--primary); }
+    .smtp-toggle-arrow { transition: transform var(--transition); }
+    .smtp-toggle.open .smtp-toggle-arrow { transform: rotate(180deg); }
+    .smtp-form-body {
+      padding-top: 18px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .smtp-form-body.open { display: block; }
+    .smtp-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .smtp-form-grid .form-group label { font-size: 10px; }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .toggle-row input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+    .template-section { margin-top: 24px; }
+    .template-section label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .template-hint { font-size: 10px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .template-section input,
+    .template-section textarea {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+      transition: all var(--transition);
+      margin-bottom: 14px;
+    }
+    .template-section input:focus,
+    .template-section textarea:focus {
+      border-color: var(--primary-border);
+      background: rgba(0,212,212,.04);
+      box-shadow: 0 0 0 3px rgba(0,212,212,.06);
+    }
+    .template-section textarea { min-height: 160px; line-height: 1.6; }
+    .send-controls {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .send-stats-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .send-stat {
+      text-align: center;
+      min-width: 70px;
+    }
+    .send-stat .s-val {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .send-stat .s-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .send-stat .s-val.cyan   { color: var(--primary); }
+    .send-stat .s-val.green  { color: var(--green); }
+    .send-stat .s-val.yellow { color: var(--yellow); }
+    .send-stat .s-val.red    { color: var(--red); }
+    .delay-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .delay-row input[type=number] {
+      width: 72px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: all var(--transition);
+    }
+    .delay-row input:focus { border-color: var(--primary-border); }
+    .email-progress { margin-top: 18px; }
+    .email-log {
+      height: 200px;
+      overflow-y: auto;
+      padding: 12px 16px;
+      background: rgba(0,0,0,.2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-family: 'SF Mono','Fira Code',monospace;
+      font-size: 11px;
+      line-height: 1.8;
+      margin-top: 12px;
+    }
+    .email-log::-webkit-scrollbar { width: 3px; }
+    .email-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+    .el-sent    { color: var(--green); }
+    .el-failed  { color: var(--red); }
+    .el-info    { color: var(--text-muted); }
+    .el-phase   { color: var(--primary); font-weight: 600; }
+    .notification {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 999;
+      animation: fade-up .3s ease both;
+      max-width: 320px;
+    }
+    .notification.success { background: var(--green-dim);  border: 1px solid rgba(63,185,80,.3);  color: var(--green); }
+    .notification.error   { background: var(--red-dim);    border: 1px solid rgba(248,81,73,.3);  color: var(--red); }
+    .notification.info    { background: var(--primary-dim); border: 1px solid var(--primary-border); color: var(--primary); }
   </style>
 </head>
 <body>
@@ -760,6 +1038,182 @@
           </thead>
           <tbody id="leadsBody"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ DATABASE SECTION ════════ -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Lead Database</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- DB Stats -->
+  <div class="db-stats-grid">
+    <div class="stat-card glass">
+      <div class="label">Total in DB</div>
+      <div class="value teal" id="dbTotal">0</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="label">Unsent</div>
+      <div class="value" id="dbUnsent">0</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="label">Sent</div>
+      <div class="value green" id="dbSent">0</div>
+    </div>
+    <div class="stat-card glass">
+      <div class="label">Failed</div>
+      <div class="value" style="color:var(--red)" id="dbFailed">0</div>
+    </div>
+  </div>
+
+  <!-- DB Leads Table -->
+  <div class="db-panel glass">
+    <div class="db-panel-header">
+      <span class="panel-title">All Leads</span>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-status="">All</button>
+        <button class="filter-tab" data-status="unsent">Unsent</button>
+        <button class="filter-tab sent" data-status="sent">Sent</button>
+        <button class="filter-tab failed" data-status="failed">Failed</button>
+      </div>
+      <div class="pagination-row">
+        <button class="pg-btn" id="pgPrev">‹</button>
+        <span id="pgInfo">—</span>
+        <button class="pg-btn" id="pgNext">›</button>
+      </div>
+    </div>
+    <div class="db-table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Industry</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Q</th>
+            <th>Status</th>
+            <th>Sent At</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="dbLeadsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════ EMAIL OUTREACH SECTION ════════ -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Email Outreach</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="email-section glass-strong">
+    <div class="email-section-header">SMTP + Outreach</div>
+
+    <!-- SMTP Config (collapsible) -->
+    <div class="smtp-toggle" id="smtpToggle">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      SMTP Configuration
+      <svg class="smtp-toggle-arrow" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+    <div class="smtp-form-body" id="smtpFormBody">
+      <div class="smtp-form-grid">
+        <div class="form-group">
+          <label>SMTP Host</label>
+          <input id="smtpHost" placeholder="smtp.office365.com">
+        </div>
+        <div class="form-group">
+          <label>Port</label>
+          <input type="number" id="smtpPort" value="587" placeholder="587">
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input id="smtpUser" placeholder="you@yourdomain.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="smtpPass" placeholder="App password">
+        </div>
+        <div class="form-group">
+          <label>From Name</label>
+          <input id="smtpFromName" placeholder="Your Name">
+        </div>
+        <div class="form-group">
+          <label>From Email</label>
+          <input id="smtpFromEmail" placeholder="you@yourdomain.com">
+        </div>
+      </div>
+      <div class="toggle-row" style="margin-bottom:16px">
+        <input type="checkbox" id="smtpSecure">
+        <label for="smtpSecure" style="cursor:pointer;font-size:13px;color:var(--text-muted)">Use SSL/TLS on port 465 (leave off for port 587 STARTTLS)</label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnSaveSmtp">Save Config</button>
+        <button class="btn btn-resume" id="btnTestSmtp">Test Connection</button>
+      </div>
+    </div>
+
+    <!-- Email Template -->
+    <div class="template-section">
+      <label>Subject</label>
+      <input id="emailSubject" placeholder="Quick question for {{companyName}}">
+      <label>
+        Body
+        <span class="template-hint"> — use {{firstName}}, {{companyName}}, {{website}}, {{industry}}, {{location}}</span>
+      </label>
+      <textarea id="emailBody" placeholder="Hi {{firstName}},&#10;&#10;I noticed {{companyName}} is producing a serious volume of ad creative..."></textarea>
+      <button class="btn btn-primary" id="btnSaveTemplate">Save Template</button>
+    </div>
+
+    <!-- Send Controls -->
+    <div class="send-controls">
+      <div class="send-stats-row">
+        <div class="send-stat">
+          <div class="s-val cyan" id="sendTotal">0</div>
+          <div class="s-lbl">Total Unsent</div>
+        </div>
+        <div class="send-stat">
+          <div class="s-val green" id="sendSent">0</div>
+          <div class="s-lbl">Sent</div>
+        </div>
+        <div class="send-stat">
+          <div class="s-val yellow" id="sendProgress">0</div>
+          <div class="s-lbl">Remaining</div>
+        </div>
+        <div class="send-stat">
+          <div class="s-val red" id="sendFailed">0</div>
+          <div class="s-lbl">Failed</div>
+        </div>
+      </div>
+
+      <div class="delay-row">
+        <span>Delay between emails:</span>
+        <input type="number" id="sendDelay" value="5" min="1" max="120">
+        <span>seconds &nbsp;(5s = ~12/min, stays within Microsoft 365 limits)</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnSendUnsent">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          Send to Unsent Leads
+        </button>
+        <button class="btn btn-stop" id="btnStopSend" disabled>Stop Sending</button>
+      </div>
+
+      <div class="email-progress" id="emailProgressSection" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:12px;color:var(--text-muted)" id="emailProgressLabel">Sending...</span>
+          <span style="font-size:12px;color:var(--text-muted)" id="emailProgressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="emailProgressFill" style="width:0%"></div>
+        </div>
+        <div class="email-log" id="emailLog"></div>
       </div>
     </div>
   </div>
@@ -925,6 +1379,253 @@
   });
 
   connectSSE();
+
+  // ════════════════════════════════════════════════════════════════
+  // DATABASE + EMAIL OUTREACH
+  // ════════════════════════════════════════════════════════════════
+
+  // ── DB Stats ──────────────────────────────────────────────────
+
+  function refreshDbStats() {
+    fetch('/api/db/stats').then(r => r.json()).then(s => {
+      animateValue($('dbTotal'),  s.total  || 0);
+      animateValue($('dbUnsent'), s.unsent || 0);
+      animateValue($('dbSent'),   s.sent   || 0);
+      animateValue($('dbFailed'), s.failed || 0);
+      $('sendTotal').textContent    = s.unsent || 0;
+      $('sendProgress').textContent = Math.max(0, (s.unsent || 0) - (window._emailSent || 0));
+    }).catch(() => {});
+  }
+
+  // Refresh DB stats every 5s while page open
+  refreshDbStats();
+  setInterval(refreshDbStats, 5000);
+
+  // ── DB Leads Table ────────────────────────────────────────────
+
+  let dbPage   = 1;
+  let dbFilter = '';
+
+  function renderDbRow(lead) {
+    const statusCls = { sent: 'status-sent', failed: 'status-failed', unsent: 'status-unsent' }[lead.email_status] || 'status-unsent';
+    const typeCls   = lead.email_type === 'personal' ? 'type-personal' : 'type-generic';
+    const sentAt    = lead.email_sent_at ? lead.email_sent_at.slice(0, 16).replace('T', ' ') : '—';
+    return `<tr>
+      <td title="${esc(lead.email)}">${esc(lead.email)}</td>
+      <td title="${esc(lead.company_name)}">${esc(lead.company_name || '—')}</td>
+      <td>${esc(lead.industry || '—')}</td>
+      <td>${esc(lead.location || '—')}</td>
+      <td><span class="type-badge ${typeCls}">${esc(lead.email_type)}</span></td>
+      <td style="color:var(--primary);font-weight:700">${lead.quality_score}</td>
+      <td><span class="status-badge ${statusCls}">${lead.email_status}</span></td>
+      <td style="font-size:11px;color:var(--text-dim)">${esc(sentAt)}</td>
+      <td style="color:var(--text-dim)">${esc(lead.source || '')}</td>
+    </tr>`;
+  }
+
+  function loadDbLeads() {
+    const url = `/api/db/leads?page=${dbPage}&perPage=50${dbFilter ? `&status=${dbFilter}` : ''}`;
+    fetch(url).then(r => r.json()).then(data => {
+      const tbody = $('dbLeadsBody');
+      if (!data.items || data.items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-dim)">No leads found</td></tr>`;
+      } else {
+        tbody.innerHTML = data.items.map(renderDbRow).join('');
+      }
+      $('pgInfo').textContent = data.total > 0
+        ? `${(dbPage - 1) * 50 + 1}–${Math.min(dbPage * 50, data.total)} of ${data.total}`
+        : '0 leads';
+      $('pgPrev').disabled = dbPage <= 1;
+      $('pgNext').disabled = dbPage >= (data.pages || 1);
+    }).catch(() => {});
+  }
+
+  loadDbLeads();
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      dbFilter = tab.dataset.status;
+      dbPage   = 1;
+      loadDbLeads();
+    });
+  });
+
+  $('pgPrev').addEventListener('click', () => { dbPage--; loadDbLeads(); });
+  $('pgNext').addEventListener('click', () => { dbPage++; loadDbLeads(); });
+
+  // Reload DB table when scraper finds a new lead
+  document.addEventListener('helix:newlead', () => { loadDbLeads(); refreshDbStats(); });
+
+  // ── SMTP Config ───────────────────────────────────────────────
+
+  // Toggle SMTP form
+  $('smtpToggle').addEventListener('click', () => {
+    $('smtpToggle').classList.toggle('open');
+    $('smtpFormBody').classList.toggle('open');
+  });
+
+  // Load saved config
+  fetch('/api/smtp/config').then(r => r.json()).then(cfg => {
+    $('smtpHost').value      = cfg.host      || 'smtp.office365.com';
+    $('smtpPort').value      = cfg.port      || 587;
+    $('smtpSecure').checked  = cfg.secure === 1;
+    $('smtpUser').value      = cfg.user      || '';
+    $('smtpPass').value      = cfg.pass      || '';
+    $('smtpFromName').value  = cfg.from_name  || '';
+    $('smtpFromEmail').value = cfg.from_email || '';
+  }).catch(() => {});
+
+  $('btnSaveSmtp').addEventListener('click', async () => {
+    const body = {
+      host:       $('smtpHost').value.trim(),
+      port:       parseInt($('smtpPort').value, 10) || 587,
+      secure:     $('smtpSecure').checked,
+      user:       $('smtpUser').value.trim(),
+      pass:       $('smtpPass').value,
+      from_name:  $('smtpFromName').value.trim(),
+      from_email: $('smtpFromEmail').value.trim()
+    };
+    const r = await fetch('/api/smtp/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const d = await r.json();
+    notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
+  });
+
+  $('btnTestSmtp').addEventListener('click', async () => {
+    notify('Testing connection...', 'info');
+    const r = await fetch('/api/smtp/test', { method: 'POST' });
+    const d = await r.json();
+    notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
+  });
+
+  // ── Email Template ────────────────────────────────────────────
+
+  fetch('/api/smtp/template').then(r => r.json()).then(t => {
+    if (t.subject) $('emailSubject').value = t.subject;
+    if (t.body)    $('emailBody').value    = t.body;
+  }).catch(() => {});
+
+  $('btnSaveTemplate').addEventListener('click', async () => {
+    const body = { subject: $('emailSubject').value, body: $('emailBody').value };
+    const r = await fetch('/api/smtp/template', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const d = await r.json();
+    notify(r.ok ? d.message : d.error, r.ok ? 'success' : 'error');
+  });
+
+  // ── Email Sending ─────────────────────────────────────────────
+
+  let emailEventSource = null;
+  window._emailSent    = 0;
+
+  function connectEmailSSE() {
+    if (emailEventSource) emailEventSource.close();
+    emailEventSource = new EventSource('/api/email/events');
+
+    emailEventSource.addEventListener('emailStatus', e => {
+      const d = JSON.parse(e.data);
+      if (d.running) setEmailRunningUI(true);
+    });
+
+    emailEventSource.addEventListener('emailStart', e => {
+      const d = JSON.parse(e.data);
+      $('emailProgressSection').style.display = 'block';
+      addEmailLog(`Starting — ${d.total} unsent leads queued`, 'phase');
+      setEmailRunningUI(true);
+    });
+
+    emailEventSource.addEventListener('emailSent', e => {
+      const d = JSON.parse(e.data);
+      window._emailSent = d.sent;
+      updateEmailProgress(d);
+      addEmailLog(`✓ ${d.email}${d.company ? ` (${d.company})` : ''}`, 'sent');
+    });
+
+    emailEventSource.addEventListener('emailFailed', e => {
+      const d = JSON.parse(e.data);
+      updateEmailProgress(d);
+      addEmailLog(`✗ ${d.email} — ${d.error}`, 'failed');
+    });
+
+    emailEventSource.addEventListener('emailDone', e => {
+      const d = JSON.parse(e.data);
+      addEmailLog(`${d.aborted ? 'Stopped' : 'Complete'} — ${d.sent} sent, ${d.failed} failed`, 'phase');
+      setEmailRunningUI(false);
+      refreshDbStats();
+      loadDbLeads();
+    });
+
+    emailEventSource.addEventListener('emailError', e => {
+      try { addEmailLog(JSON.parse(e.data).message, 'failed'); } catch {}
+      setEmailRunningUI(false);
+    });
+  }
+
+  function updateEmailProgress(d) {
+    const pct = d.total > 0 ? Math.round(((d.sent + d.failed) / d.total) * 100) : 0;
+    $('emailProgressFill').style.width = pct + '%';
+    $('emailProgressPct').textContent  = pct + '%';
+    $('emailProgressLabel').textContent = `${d.sent + d.failed} / ${d.total} processed`;
+    $('sendSent').textContent    = d.sent;
+    $('sendFailed').textContent  = d.failed;
+    $('sendProgress').textContent = Math.max(0, d.total - d.sent - d.failed);
+  }
+
+  function addEmailLog(msg, type) {
+    const log = $('emailLog');
+    const line = document.createElement('div');
+    const t = new Date().toLocaleTimeString('en-AU', { hour12: false });
+    line.className = 'el-' + (type || 'info');
+    line.textContent = `[${t}] ${msg}`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function setEmailRunningUI(running) {
+    $('btnSendUnsent').disabled = running;
+    $('btnStopSend').disabled   = !running;
+    if (running) $('emailProgressSection').style.display = 'block';
+  }
+
+  $('btnSendUnsent').addEventListener('click', async () => {
+    $('emailLog').innerHTML = '';
+    window._emailSent = 0;
+    $('emailProgressFill').style.width = '0%';
+    const r = await fetch('/api/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delaySeconds: parseInt($('sendDelay').value, 10) || 5 })
+    });
+    const d = await r.json();
+    if (!r.ok) { notify(d.error, 'error'); return; }
+    notify('Email sending started', 'info');
+    connectEmailSSE();
+  });
+
+  $('btnStopSend').addEventListener('click', async () => {
+    await fetch('/api/email/stop', { method: 'POST' });
+    addEmailLog('Stop requested...', 'info');
+  });
+
+  connectEmailSSE();
+
+  // ── Notification toast ────────────────────────────────────────
+
+  function notify(msg, type = 'info') {
+    const el = document.createElement('div');
+    el.className = `notification ${type}`;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  // Emit custom event when scraper finds a lead so DB table auto-refreshes
+  const _origAddLeadRow = addLeadRow;
+  function addLeadRow(lead) {
+    _origAddLeadRow(lead);
+    document.dispatchEvent(new CustomEvent('helix:newlead'));
+  }
 </script>
 </body>
 </html>

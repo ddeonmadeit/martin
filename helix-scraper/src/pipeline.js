@@ -10,6 +10,7 @@ const { scrapeSite } = require('./siteScraper');
 const Deduplicator = require('./deduplicator');
 const CsvWriter = require('./csvWriter');
 const { randomDelay } = require('./proxyRotator');
+const db = require('./database');
 
 const segments = require(path.join(config.DATA_DIR, 'industries.json'));
 const locations = require(path.join(config.DATA_DIR, 'locations.json'));
@@ -124,6 +125,7 @@ class ScraperPipeline extends EventEmitter {
 
         dedup.addEmail(lead.email);
         csvWriter.writeLead(lead);
+        try { db.upsertLead(lead); } catch (_) {}
         self.leadCount++;
 
         if (lead.emailType === 'personal') self.personalCount++;
