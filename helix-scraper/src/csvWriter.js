@@ -3,7 +3,7 @@ const path = require('path');
 const csvParser = require('csv-parser');
 const config = require('./config');
 
-const CSV_HEADERS = 'Email,Owner Name,Company Name,Website,Industry,Location,Email Type,Quality Score,Source\n';
+const CSV_HEADERS = 'Email,Owner Name,Company Name,Website,Industry,Location,Email Type,Quality Score,Phone,Instagram Handle,Source\n';
 const CSV_PATH = path.join(config.OUTPUT_DIR, 'Helix Leads.csv');
 
 class CsvWriter {
@@ -13,16 +13,13 @@ class CsvWriter {
   }
 
   init(resume = false) {
-    // Ensure output dir exists
     if (!fs.existsSync(config.OUTPUT_DIR)) {
       fs.mkdirSync(config.OUTPUT_DIR, { recursive: true });
     }
 
     if (resume && fs.existsSync(CSV_PATH)) {
-      // Append mode
       this.fd = fs.openSync(CSV_PATH, 'a');
     } else {
-      // New file
       this.fd = fs.openSync(CSV_PATH, 'w');
       fs.writeSync(this.fd, CSV_HEADERS);
     }
@@ -47,6 +44,8 @@ class CsvWriter {
       lead.location,
       lead.emailType,
       lead.qualityScore,
+      lead.phone        || '',
+      lead.instagramHandle || '',
       lead.source
     ].map(f => this.escapeCsvField(f)).join(',') + '\n';
 
@@ -66,10 +65,7 @@ class CsvWriter {
           if (row.Email) deduplicator.addEmail(row.Email);
           if (row.Website) deduplicator.registerDomain(row.Website);
         })
-        .on('end', () => {
-          this.leadCount = count;
-          resolve(count);
-        })
+        .on('end', () => { this.leadCount = count; resolve(count); })
         .on('error', reject);
     });
   }

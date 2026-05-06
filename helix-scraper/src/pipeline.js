@@ -6,6 +6,9 @@ const EventEmitter = require('events');
 const config = require('./config');
 const { searchDuckDuckGo, buildFallbackQueries: ddgFallback } = require('./scrapers/duckSearch');
 const { searchBing, buildFallbackQueries: bingFallback } = require('./scrapers/bingSearch');
+const { searchGoogle } = require('./scrapers/googleSearch');
+const { searchInstagram } = require('./scrapers/instagramSearch');
+const { searchLinkedIn } = require('./scrapers/linkedinSearch');
 const { scrapeSite } = require('./siteScraper');
 const Deduplicator = require('./deduplicator');
 const CsvWriter = require('./csvWriter');
@@ -20,24 +23,33 @@ const ERROR_LOG = path.join(config.OUTPUT_DIR, 'errors.log');
 function logError(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
   try {
-    if (!fs.existsSync(config.OUTPUT_DIR)) {
-      fs.mkdirSync(config.OUTPUT_DIR, { recursive: true });
-    }
+    if (!fs.existsSync(config.OUTPUT_DIR)) fs.mkdirSync(config.OUTPUT_DIR, { recursive: true });
     fs.appendFileSync(ERROR_LOG, line);
   } catch {}
 }
 
-function ts() {
-  return new Date().toLocaleTimeString('en-AU', { hour12: false });
-}
+function ts() { return new Date().toLocaleTimeString('en-AU', { hour12: false }); }
 
 function stars(score) {
   const n = Math.max(0, Math.min(5, Math.round(score)));
   return '★'.repeat(n) + '☆'.repeat(5 - n);
 }
 
-function rpad(str, len) {
-  return String(str || '').padEnd(len).slice(0, len);
+function rpad(str, len) { return String(str || '').padEnd(len).slice(0, len); }
+
+// Org-type domain filter: if only 'govt' selected, non-gov domains are excluded, etc.
+function isOrgTypeAllowed(domain, orgType) {
+  if (!orgType || orgType.length === 0) return true;
+  const lower = domain.toLowerCase();
+  const isGov = lower.endsWith('.gov') || lower.endsWith('.gov.au') || lower.endsWith('.gov.nz') ||
+                lower.endsWith('.govt.nz') || lower.includes('.gov.');
+
+  const wantsGov    = orgType.includes('govt');
+  const wantsNonGov = orgType.includes('non-govt');
+
+  if (isGov  && !wantsGov)    return false;
+  if (!isGov && !wantsNonGov && wantsGov) return false;
+  return true;
 }
 
 class ScraperPipeline extends EventEmitter {
@@ -46,9 +58,13 @@ class ScraperPipeline extends EventEmitter {
     this.target = options.target || config.TARGET_LEADS;
     this.resume = options.resume || false;
     this.enabledSources = options.sources || ['duckduckgo', 'bing'];
-    this.segmentFilter = options.industry || null;
-    this.locationFilter = options.location || null;
     this.verbose = options.verbose || false;
+    this.collectOptions = options.collect || ['email'];
+    this.orgType = options.orgType || ['non-govt', 'for-profit'];
+
+    // Accept both single value (legacy) and array
+    this.segmentFilters  = options.industries || (options.industry  ? [options.industry]  : []);
+    this.locationFilters = options.locations  || (options.location  ? [options.location]  : []);
 
     this.leadCount = 0;
     this.domainsScraped = 0;
@@ -62,19 +78,21 @@ class ScraperPipeline extends EventEmitter {
   }
 
   getSegments() {
-    if (!this.segmentFilter) return segments.categories;
-    const q = this.segmentFilter.toLowerCase();
+    if (!this.segmentFilters.length) return segments.categories;
     return segments.categories.filter(c =>
-      c.slug.includes(q) || c.label.toLowerCase().includes(q)
+      this.segmentFilters.some(q =>
+        c.slug === q || c.slug.includes(q) || c.label.toLowerCase().includes(q.toLowerCase())
+      )
     );
   }
 
   getLocations() {
-    if (!this.locationFilter) return locations.locations;
-    const q = this.locationFilter.toLowerCase();
+    if (!this.locationFilters.length) return locations.locations;
     return locations.locations.filter(l =>
-      l.slug.includes(q) || l.label.toLowerCase().includes(q) ||
-      (l.country && l.country.toLowerCase() === q)
+      this.locationFilters.some(q =>
+        l.slug === q || l.slug.includes(q) || l.label.toLowerCase().includes(q.toLowerCase()) ||
+        (l.country && l.country.toLowerCase() === q.toLowerCase())
+      )
     );
   }
 
@@ -131,21 +149,22 @@ class ScraperPipeline extends EventEmitter {
       const totalCombos = targetSegments.length * targetLocations.length;
 
       console.log(`\n${'━'.repeat(72)}`);
-      console.log(`  PREEMO LEADS  target=${this.target}  segments=${targetSegments.length}  locations=${targetLocations.length}  combos=${totalCombos}`);
+      console.log(`  PREEMO LEADS  target=${this.target}  niches=${targetSegments.length}  regions=${targetLocations.length}  combos=${totalCombos}`);
+      console.log(`  sources=[${this.enabledSources.join(',')}]  collect=[${this.collectOptions.join(',')}]`);
       console.log(`${'━'.repeat(72)}\n`);
 
       const self = this;
-
-      // Shared site-scraping pool — active throughout entire run
       const siteLimit = pLimit(config.SITE_CONCURRENCY);
       const allSiteTasks = [];
 
       function queueSite(company) {
         const task = siteLimit(async () => {
           if (self.leadCount >= self.target || self.aborted) return;
+          const domain = company.website.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+          if (!isOrgTypeAllowed(domain, self.orgType)) return;
           try {
             await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
-            const lead = await scrapeSite(company, self.verbose);
+            const lead = await scrapeSite(company, self.verbose, self.collectOptions);
             tryAddLead(lead);
           } catch (err) {
             logError(`Site ${company.website}: ${err.message}`);
@@ -171,15 +190,17 @@ class ScraperPipeline extends EventEmitter {
         else self.genericCount++;
 
         const entry = {
-          email: lead.email,
-          ownerName: lead.ownerName || '',
-          companyName: lead.companyName || '',
-          website: lead.website || '',
-          industry: lead.industry || '',
-          location: lead.location || '',
-          emailType: lead.emailType,
-          qualityScore: lead.qualityScore,
-          source: lead.source
+          email:           lead.email,
+          ownerName:       lead.ownerName       || '',
+          companyName:     lead.companyName     || '',
+          website:         lead.website         || '',
+          industry:        lead.industry        || '',
+          location:        lead.location        || '',
+          phone:           lead.phone           || '',
+          instagramHandle: lead.instagramHandle || '',
+          emailType:       lead.emailType,
+          qualityScore:    lead.qualityScore,
+          source:          lead.source
         };
         self.recentLeads.push(entry);
         if (self.recentLeads.length > 50) self.recentLeads.shift();
@@ -191,11 +212,9 @@ class ScraperPipeline extends EventEmitter {
         console.log(
           `[${ts()}]  #${num}  ${rpad(lead.email, 38)}  ${rpad(lead.companyName || '—', 24)}  ${rpad(lead.emailType || 'generic', 9)}  ${stars(lead.qualityScore || 0)}`
         );
-
         return true;
       }
 
-      // Print progress summary every 30 s
       let lastProgressPrint = Date.now();
       function maybePrintProgress() {
         if (Date.now() - lastProgressPrint < 30000) return;
@@ -203,7 +222,7 @@ class ScraperPipeline extends EventEmitter {
         const elapsed = Math.round((Date.now() - self.startTime) / 1000);
         const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
         const ss = String(elapsed % 60).padStart(2, '0');
-        console.log(`\n[${ts()}]  ── ${self.leadCount} leads │ ${self.domainsScraped} domains scraped │ ${mm}:${ss} elapsed ──\n`);
+        console.log(`\n[${ts()}]  ── ${self.leadCount} leads │ ${self.domainsScraped} domains │ ${mm}:${ss} elapsed ──\n`);
       }
 
       // ═══════════ SEARCH + SCRAPE (interleaved) ═══════════
@@ -211,7 +230,7 @@ class ScraperPipeline extends EventEmitter {
       this.emit('log', { type: 'phase', message: 'Searching and extracting emails simultaneously' });
       this.emit('progress', this.getStatus());
 
-      // Shuffle combos so coverage is spread across segments/locations
+      // Shuffle combos for coverage diversity
       const allCombos = [];
       for (const seg of targetSegments) {
         for (const loc of targetLocations) {
@@ -232,37 +251,84 @@ class ScraperPipeline extends EventEmitter {
 
           const engines = [];
 
+          // Standard search engines
           if (self.enabledSources.includes('duckduckgo')) {
             engines.push(
               searchDuckDuckGo(seg, loc, self.verbose)
                 .then(r => r.map(x => ({ ...x, source: 'duckduckgo' })))
-                .catch(err => {
-                  logError(`DDG ${seg.slug}/${loc.slug}: ${err.message}`);
-                  return [];
-                })
+                .catch(err => { logError(`DDG ${seg.slug}/${loc.slug}: ${err.message}`); return []; })
             );
           }
-
           if (self.enabledSources.includes('bing')) {
             engines.push(
               searchBing(seg, loc, self.verbose)
                 .then(r => r.map(x => ({ ...x, source: 'bing' })))
-                .catch(err => {
-                  logError(`Bing ${seg.slug}/${loc.slug}: ${err.message}`);
-                  return [];
-                })
+                .catch(err => { logError(`Bing ${seg.slug}/${loc.slug}: ${err.message}`); return []; })
+            );
+          }
+          if (self.enabledSources.includes('google')) {
+            engines.push(
+              searchGoogle(seg, loc, self.verbose)
+                .then(r => r.map(x => ({ ...x, source: 'google' })))
+                .catch(err => { logError(`Google ${seg.slug}/${loc.slug}: ${err.message}`); return []; })
             );
           }
 
-          const allResults = (await Promise.all(engines)).flat();
+          const allWebResults = (await Promise.all(engines)).flat();
 
           let newCount = 0;
-          for (const r of allResults) {
+          for (const r of allWebResults) {
             if (dedup.isDomainNew(r.website)) {
               dedup.registerDomain(r.website);
               queueSite({ website: r.website, companyName: '', industry: seg.label, location: loc.label, source: r.source });
               newCount++;
             }
+          }
+
+          // Instagram source — returns profiles with potential direct emails
+          if (self.enabledSources.includes('instagram')) {
+            try {
+              const profiles = await searchInstagram(seg, loc, self.verbose);
+              for (const profile of profiles) {
+                if (profile.directEmail && !dedup.hasEmail(profile.directEmail)) {
+                  // Direct email in bio — create lead immediately
+                  tryAddLead({
+                    email:           profile.directEmail,
+                    ownerName:       '',
+                    companyName:     profile.companyName,
+                    website:         profile.website,
+                    industry:        seg.label,
+                    location:        loc.label,
+                    phone:           '',
+                    instagramHandle: profile.instagramHandle,
+                    emailType:       'personal',
+                    isICPSignal:     false,
+                    isAntiICP:       false,
+                    hasBuyerTitle:   false,
+                    source:          'instagram',
+                    qualityScore:    3,
+                  });
+                } else if (profile.website && !profile.website.includes('instagram.com') && dedup.isDomainNew(profile.website)) {
+                  dedup.registerDomain(profile.website);
+                  queueSite({ ...profile });
+                  newCount++;
+                }
+              }
+            } catch (err) { logError(`Instagram ${seg.slug}/${loc.slug}: ${err.message}`); }
+          }
+
+          // LinkedIn source — finds company pages, scrapes for website
+          if (self.enabledSources.includes('linkedin')) {
+            try {
+              const companies = await searchLinkedIn(seg, loc, self.verbose);
+              for (const company of companies) {
+                if (company.website && !company.website.includes('linkedin.com') && dedup.isDomainNew(company.website)) {
+                  dedup.registerDomain(company.website);
+                  queueSite({ ...company });
+                  newCount++;
+                }
+              }
+            } catch (err) { logError(`LinkedIn ${seg.slug}/${loc.slug}: ${err.message}`); }
           }
 
           if (newCount > 0) {
@@ -276,7 +342,7 @@ class ScraperPipeline extends EventEmitter {
       await Promise.all(searchTasks);
 
       console.log(`\n[${ts()}]  SEARCH DONE  all combos complete — waiting for scrapers to finish…\n`);
-      this.emit('log', { type: 'info', message: `Search complete — waiting for scrapers to finish…` });
+      this.emit('log', { type: 'info', message: `Search complete — waiting for scrapers…` });
 
       await Promise.all(allSiteTasks);
       this.domainsScraped = dedup.domainCount;
@@ -289,12 +355,9 @@ class ScraperPipeline extends EventEmitter {
         this.emit('log', { type: 'phase', message: `Fallback queries — need ${need} more leads` });
         this.emit('progress', this.getStatus());
 
-        const fbSegments = targetSegments.slice(0, 8);
-        const fbLocations = targetLocations.slice(0, 6);
-
         const fbCombos = [];
-        for (const seg of fbSegments) {
-          for (const loc of fbLocations) {
+        for (const seg of targetSegments.slice(0, 8)) {
+          for (const loc of targetLocations.slice(0, 6)) {
             fbCombos.push({ seg, loc });
           }
         }
@@ -307,34 +370,28 @@ class ScraperPipeline extends EventEmitter {
             if (self.leadCount >= self.target || self.aborted) return;
 
             const fbEngines = [];
-
             if (self.enabledSources.includes('duckduckgo')) {
               fbEngines.push((async () => {
                 const results = [];
                 for (const q of ddgFallback(seg, loc)) {
                   try {
-                    const stub = { label: q, searchKeywords: [q] };
+                    const stub = { label: q, searchKeywords: [q], slug: 'fb' };
                     const r = await searchDuckDuckGo(stub, loc, self.verbose);
                     results.push(...r.map(x => ({ ...x, source: 'duckduckgo' })));
-                  } catch (err) {
-                    logError(`DDG fallback ${seg.slug}/${loc.slug}: ${err.message}`);
-                  }
+                  } catch (err) { logError(`DDG fallback ${seg.slug}/${loc.slug}: ${err.message}`); }
                 }
                 return results;
               })());
             }
-
             if (self.enabledSources.includes('bing')) {
               fbEngines.push((async () => {
                 const results = [];
                 for (const q of bingFallback(seg, loc)) {
                   try {
-                    const stub = { label: q, searchKeywords: [q] };
+                    const stub = { label: q, searchKeywords: [q], slug: 'fb' };
                     const r = await searchBing(stub, loc, self.verbose);
                     results.push(...r.map(x => ({ ...x, source: 'bing' })));
-                  } catch (err) {
-                    logError(`Bing fallback ${seg.slug}/${loc.slug}: ${err.message}`);
-                  }
+                  } catch (err) { logError(`Bing fallback ${seg.slug}/${loc.slug}: ${err.message}`); }
                 }
                 return results;
               })());
@@ -342,7 +399,6 @@ class ScraperPipeline extends EventEmitter {
 
             const allResults = (await Promise.all(fbEngines)).flat();
             let added = 0;
-
             for (const r of allResults) {
               if (dedup.isDomainNew(r.website)) {
                 dedup.registerDomain(r.website);
@@ -351,7 +407,7 @@ class ScraperPipeline extends EventEmitter {
                   if (self.leadCount >= self.target || self.aborted) return;
                   try {
                     await randomDelay(config.SITE_DELAY_MIN, config.SITE_DELAY_MAX);
-                    const lead = await scrapeSite(company, self.verbose);
+                    const lead = await scrapeSite(company, self.verbose, self.collectOptions);
                     tryAddLead(lead);
                   } catch (err) {
                     logError(`Site ${company.website}: ${err.message}`);
@@ -363,10 +419,7 @@ class ScraperPipeline extends EventEmitter {
                 added++;
               }
             }
-
-            if (added > 0) {
-              console.log(`[${ts()}]  FALLBACK  ${seg.slug}/${loc.slug} → ${added} new domains`);
-            }
+            if (added > 0) console.log(`[${ts()}]  FALLBACK  ${seg.slug}/${loc.slug} → ${added} new domains`);
           })
         );
 

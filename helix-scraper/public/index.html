@@ -179,6 +179,30 @@
     }
     .form-group select option { background: #fff; color: var(--text); }
 
+    /* ═══ Multi-select groups ═══ */
+    .multisel-group { margin-bottom: 18px; }
+    .multisel-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+    }
+    .multisel-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .7px; color: var(--text-muted);
+    }
+    .multisel-btns { display: flex; gap: 4px; }
+    .pill-mini {
+      padding: 2px 9px; border-radius: var(--radius-pill); font-size: 10px; font-weight: 600;
+      border: 1px solid var(--border); border-top-color: var(--border-mid);
+      background: linear-gradient(180deg, #d8e2ed 0%, #edf1f7 100%);
+      color: var(--text-muted); cursor: pointer;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.85);
+      transition: all var(--transition);
+    }
+    .pill-mini:hover { color: var(--primary); border-color: var(--primary-border); }
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-grid .source-chip { font-size: 11px; padding: 5px 11px; }
+    .config-top-row { display: flex; gap: 28px; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; }
+    .config-top-row .form-group { min-width: 130px; }
+
     /* ═══ Source chips ═══ */
     .source-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
     .source-chip {
@@ -635,16 +659,70 @@
   <!-- Controls -->
   <div class="controls-section glass-strong">
     <div class="controls-header">Configuration</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Target Leads</label><input type="number" id="inputTarget" value="2000" min="1" max="10000"></div>
-      <div class="form-group"><label>ICP Segment</label><select id="inputIndustry"><option value="">All Segments</option></select></div>
-      <div class="form-group"><label>Region</label><select id="inputLocation"><option value="">All Regions</option></select></div>
+
+    <!-- Target + Collect -->
+    <div class="config-top-row">
+      <div class="form-group">
+        <label>Target Leads</label>
+        <input type="number" id="inputTarget" value="2000" min="1" max="10000" style="max-width:130px">
+      </div>
+      <div class="form-group" style="flex:1;min-width:200px">
+        <label>Data to Collect</label>
+        <div class="source-row" id="collectRow" style="margin-bottom:0">
+          <label class="source-chip active"><input type="checkbox" value="email" checked><div class="source-dot"></div>Email</label>
+          <label class="source-chip"><input type="checkbox" value="phone"><div class="source-dot"></div>Phone</label>
+          <label class="source-chip"><input type="checkbox" value="instagram"><div class="source-dot"></div>Instagram @</label>
+        </div>
+      </div>
     </div>
-    <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);display:block;margin-bottom:10px;">Sources</label>
-    <div class="source-row" id="sourceRow">
-      <label class="source-chip active" data-source="duckduckgo"><input type="checkbox" value="duckduckgo" checked><div class="source-dot"></div>DuckDuckGo</label>
-      <label class="source-chip active" data-source="bing"><input type="checkbox" value="bing" checked><div class="source-dot"></div>Bing</label>
+
+    <!-- Niches -->
+    <div class="multisel-group">
+      <div class="multisel-header">
+        <span class="multisel-title">Niches</span>
+        <div class="multisel-btns">
+          <button class="pill-mini" onclick="toggleAllChips('nicheChips',true)">All</button>
+          <button class="pill-mini" onclick="toggleAllChips('nicheChips',false)">None</button>
+        </div>
+      </div>
+      <div class="chip-grid" id="nicheChips"></div>
     </div>
+
+    <!-- Regions -->
+    <div class="multisel-group">
+      <div class="multisel-header">
+        <span class="multisel-title">Regions</span>
+        <div class="multisel-btns">
+          <button class="pill-mini" onclick="toggleAllChips('regionChips',true)">All</button>
+          <button class="pill-mini" onclick="toggleAllChips('regionChips',false)">None</button>
+        </div>
+      </div>
+      <div class="chip-grid" id="regionChips"></div>
+    </div>
+
+    <!-- Organisation Type -->
+    <div class="multisel-group">
+      <div class="multisel-header"><span class="multisel-title">Organisation Type</span></div>
+      <div class="source-row" id="orgTypeRow" style="margin-bottom:0">
+        <label class="source-chip active"><input type="checkbox" value="non-govt" checked><div class="source-dot"></div>Non-Governmental</label>
+        <label class="source-chip active"><input type="checkbox" value="for-profit" checked><div class="source-dot"></div>For-Profit</label>
+        <label class="source-chip"><input type="checkbox" value="govt"><div class="source-dot"></div>Governmental</label>
+        <label class="source-chip"><input type="checkbox" value="non-profit"><div class="source-dot"></div>Non-Profit</label>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="multisel-group" style="margin-bottom:20px">
+      <div class="multisel-header"><span class="multisel-title">Sources</span></div>
+      <div class="source-row" id="sourceRow" style="margin-bottom:0">
+        <label class="source-chip active"><input type="checkbox" value="duckduckgo" checked><div class="source-dot"></div>DuckDuckGo</label>
+        <label class="source-chip active"><input type="checkbox" value="bing" checked><div class="source-dot"></div>Bing</label>
+        <label class="source-chip active"><input type="checkbox" value="google" checked><div class="source-dot"></div>Google</label>
+        <label class="source-chip"><input type="checkbox" value="linkedin"><div class="source-dot"></div>LinkedIn</label>
+        <label class="source-chip"><input type="checkbox" value="instagram"><div class="source-dot"></div>Instagram</label>
+      </div>
+    </div>
+
     <div class="btn-row">
       <button class="btn btn-primary" id="btnStart">Start Scraping</button>
       <button class="btn btn-resume" id="btnResume">Resume</button>
@@ -750,6 +828,12 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
       </div>
     </div>
 
+    <!-- Send to Niche filter -->
+    <div class="form-group" style="margin-top:20px;max-width:280px">
+      <label>Send to Niche <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-dim)">(filter)</span></label>
+      <select id="sendNicheFilter"><option value="">All Niches</option></select>
+    </div>
+
     <!-- Send Controls -->
     <div class="send-controls">
       <div class="send-stats-row">
@@ -822,8 +906,34 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   let eventSource = null;
   let logLines = 0;
 
-  document.querySelectorAll('.source-chip').forEach(chip => {
-    chip.addEventListener('click', (e) => {
+  function makeChip(value, label, active = true) {
+    const el = document.createElement('label');
+    el.className = 'source-chip' + (active ? ' active' : '');
+    el.innerHTML = `<input type="checkbox" value="${esc(value)}"${active ? ' checked' : ''}><div class="source-dot"></div>${esc(label)}`;
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      el.classList.toggle('active', cb.checked);
+    });
+    return el;
+  }
+
+  function toggleAllChips(containerId, checked) {
+    document.querySelectorAll(`#${containerId} .source-chip`).forEach(chip => {
+      const cb = chip.querySelector('input');
+      cb.checked = checked;
+      chip.classList.toggle('active', checked);
+    });
+  }
+
+  function getChecked(containerId) {
+    return [...document.querySelectorAll(`#${containerId} .source-chip input:checked`)].map(cb => cb.value);
+  }
+
+  // Wire static source/collect/orgType chips
+  document.querySelectorAll('#sourceRow .source-chip, #collectRow .source-chip, #orgTypeRow .source-chip').forEach(chip => {
+    chip.addEventListener('click', e => {
       e.preventDefault();
       const cb = chip.querySelector('input');
       cb.checked = !cb.checked;
@@ -832,27 +942,25 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   });
 
   fetch('/api/options').then(r => r.json()).then(data => {
-    const indSel = $('inputIndustry');
+    const nicheChips  = $('nicheChips');
+    const regionChips = $('regionChips');
+    const sendFilter  = $('sendNicheFilter');
+
     data.industries.forEach(i => {
+      nicheChips.appendChild(makeChip(i.slug, i.label, true));
       const o = document.createElement('option');
       o.value = i.slug; o.textContent = i.label;
-      indSel.appendChild(o);
+      sendFilter.appendChild(o);
     });
-    const locSel = $('inputLocation');
+
     data.locations.forEach(l => {
-      const o = document.createElement('option');
-      o.value = l.slug; o.textContent = `${l.label} (${l.country})`;
-      locSel.appendChild(o);
+      regionChips.appendChild(makeChip(l.slug, `${l.label} (${l.country})`, true));
     });
   });
 
   fetch('/api/status').then(r => r.json()).then(s => {
     if (s.running) { setRunningUI(true); updateStats(s); }
   });
-
-  function getSelectedSources() {
-    return [...document.querySelectorAll('.source-chip input:checked')].map(cb => cb.value);
-  }
 
   function formatTime(ms) {
     const s = Math.floor(ms / 1000);
@@ -863,7 +971,12 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
   }
 
   function phaseText(p) {
-    return { idle: 'Idle', init: 'Initializing...', phase1: 'Phase 1 — ICP Search', phase2: 'Phase 2 — Email Extraction', phase3: 'Phase 3 — Fallback Queries', done: 'Complete', error: 'Error' }[p] || p;
+    return {
+      idle: 'Idle', init: 'Initializing…',
+      searching: 'Searching + Extracting',
+      phase1: 'Phase 1 — ICP Search', phase2: 'Phase 2 — Emails',
+      phase3: 'Fallback Queries', done: 'Complete', error: 'Error'
+    }[p] || p;
   }
 
   function updateStats(s) {
@@ -937,20 +1050,25 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     $('btnResume').disabled = running;
     $('btnStop').disabled = !running;
     $('inputTarget').disabled = running;
-    $('inputIndustry').disabled = running;
-    $('inputLocation').disabled = running;
-    document.querySelectorAll('.source-chip').forEach(c => {
-      c.style.pointerEvents = running ? 'none' : '';
-      c.style.opacity = running ? '0.5' : '';
+    ['nicheChips','regionChips','sourceRow','collectRow','orgTypeRow'].forEach(id => {
+      const el = $(id);
+      if (el) { el.style.pointerEvents = running ? 'none' : ''; el.style.opacity = running ? '0.5' : ''; }
     });
+  }
+
+  function getSelectedSources() {
+    return getChecked('sourceRow');
   }
 
   async function startScraper(resume) {
     const body = {
-      target: parseInt($('inputTarget').value, 10) || 2000,
-      resume, sources: getSelectedSources(),
-      industry: $('inputIndustry').value || null,
-      location: $('inputLocation').value || null
+      target:     parseInt($('inputTarget').value, 10) || 2000,
+      resume,
+      sources:    getSelectedSources(),
+      industries: getChecked('nicheChips'),
+      locations:  getChecked('regionChips'),
+      collect:    getChecked('collectRow'),
+      orgType:    getChecked('orgTypeRow'),
     };
     try {
       const r = await fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -1212,7 +1330,7 @@ I noticed {{companyName}} is producing a serious volume of ad creative..."></tex
     $('emailProgressFill').style.width = '0%';
     const r = await fetch('/api/email/send', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delaySeconds: parseInt($('sendDelay').value, 10) || 5 })
+      body: JSON.stringify({ delaySeconds: parseInt($('sendDelay').value, 10) || 5, industry: $('sendNicheFilter').value || null })
     });
     const d = await r.json();
     if (!r.ok) { notify(d.error, 'error'); return; }

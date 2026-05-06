@@ -33,9 +33,7 @@ class EmailSender extends EventEmitter {
     this.total   = 0;
   }
 
-  abort() {
-    this.aborted = true;
-  }
+  abort() { this.aborted = true; }
 
   async testConnection() {
     const cfg = getResendConfig();
@@ -46,7 +44,7 @@ class EmailSender extends EventEmitter {
     return data;
   }
 
-  async sendToUnsent({ delayMs = 5000 } = {}) {
+  async sendToUnsent({ delayMs = 5000, industry = null } = {}) {
     if (this.running) throw new Error('Email sender is already running');
 
     const cfg      = getResendConfig();
@@ -58,7 +56,7 @@ class EmailSender extends EventEmitter {
       throw new Error('Email template is empty — write a subject and body first');
     }
 
-    const leads = getUnsentLeads();
+    const leads = getUnsentLeads(industry);
     if (leads.length === 0) {
       this.emit('done', { sent: 0, failed: 0, total: 0, aborted: false });
       return;
@@ -73,9 +71,7 @@ class EmailSender extends EventEmitter {
     this.emit('start', { total: this.total });
 
     const resend   = new Resend(cfg.api_key);
-    const fromAddr = cfg.from_name
-      ? `${cfg.from_name} <${cfg.from_email}>`
-      : cfg.from_email;
+    const fromAddr = cfg.from_name ? `${cfg.from_name} <${cfg.from_email}>` : cfg.from_email;
 
     for (const lead of leads) {
       if (this.aborted) break;
@@ -94,33 +90,17 @@ class EmailSender extends EventEmitter {
       const bodyHtml = bodyText.replace(/\n/g, '<br>');
 
       const { data, error } = await resend.emails.send({
-        from:    fromAddr,
-        to:      lead.email,
-        subject,
-        text:    bodyText,
-        html:    bodyHtml
+        from: fromAddr, to: lead.email, subject, text: bodyText, html: bodyHtml
       });
 
       if (error) {
         markEmailFailed(lead.email, error.message || String(error));
         this.failed++;
-        this.emit('failed', {
-          email:  lead.email,
-          error:  error.message || String(error),
-          sent:   this.sent,
-          failed: this.failed,
-          total:  this.total
-        });
+        this.emit('failed', { email: lead.email, error: error.message || String(error), sent: this.sent, failed: this.failed, total: this.total });
       } else {
         markEmailSent(lead.email);
         this.sent++;
-        this.emit('sent', {
-          email:   lead.email,
-          company: lead.company_name,
-          sent:    this.sent,
-          failed:  this.failed,
-          total:   this.total
-        });
+        this.emit('sent', { email: lead.email, company: lead.company_name, sent: this.sent, failed: this.failed, total: this.total });
       }
 
       if (!this.aborted && lead !== leads[leads.length - 1]) {
@@ -129,12 +109,7 @@ class EmailSender extends EventEmitter {
     }
 
     this.running = false;
-    this.emit('done', {
-      sent:    this.sent,
-      failed:  this.failed,
-      total:   this.total,
-      aborted: this.aborted
-    });
+    this.emit('done', { sent: this.sent, failed: this.failed, total: this.total, aborted: this.aborted });
   }
 }
 

@@ -71,19 +71,25 @@ app.post('/api/start', (req, res) => {
   }
 
   const {
-    target  = 2000,
-    resume  = false,
-    sources = ['duckduckgo', 'bing'],
-    industry = null,
-    location = null
+    target     = 2000,
+    resume     = false,
+    sources    = ['duckduckgo', 'bing'],
+    industry   = null,
+    industries = null,
+    location   = null,
+    locations  = null,
+    collect    = ['email'],
+    orgType    = ['non-govt', 'for-profit'],
   } = req.body;
 
   pipeline = new ScraperPipeline({
-    target:   parseInt(target, 10) || 2000,
+    target:     parseInt(target, 10) || 2000,
     resume,
     sources,
-    industry,
-    location,
+    industries: industries || (industry ? [industry] : []),
+    locations:  locations  || (location  ? [location]  : []),
+    collect,
+    orgType,
     verbose: true
   });
 
@@ -203,10 +209,11 @@ app.post('/api/email/send', async (req, res) => {
   if (emailSender.running) {
     return res.status(409).json({ error: 'Email sender is already running' });
   }
-  const delayMs = (parseInt(req.body.delaySeconds, 10) || 5) * 1000;
+  const delayMs  = (parseInt(req.body.delaySeconds, 10) || 5) * 1000;
+  const industry = req.body.industry || null;
   emailSender = new EmailSender();
   attachEmailEvents(emailSender);
-  emailSender.sendToUnsent({ delayMs }).catch(err => {
+  emailSender.sendToUnsent({ delayMs, industry }).catch(err => {
     broadcastEmail('emailError', { message: err.message });
   });
   res.json({ message: 'Email sending started' });

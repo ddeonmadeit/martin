@@ -69,6 +69,11 @@ function _initSchema(db) {
 
   db.prepare(`INSERT OR IGNORE INTO resend_config (id, from_name, from_email) VALUES (1, 'Martin', 'martin@preemo.club')`).run();
   db.prepare(`INSERT OR IGNORE INTO email_template (id) VALUES (1)`).run();
+
+  // Migrations: add new columns if not present
+  const cols = db.prepare('PRAGMA table_info(leads)').all().map(c => c.name);
+  if (!cols.includes('phone'))            db.exec(`ALTER TABLE leads ADD COLUMN phone TEXT DEFAULT ''`);
+  if (!cols.includes('instagram_handle')) db.exec(`ALTER TABLE leads ADD COLUMN instagram_handle TEXT DEFAULT ''`);
 }
 
 // ── Leads ────────────────────────────────────────────────────────────────────
@@ -77,21 +82,23 @@ function upsertLead(lead) {
   return getDb().prepare(`
     INSERT OR IGNORE INTO leads
       (email, owner_name, company_name, website, industry, location,
-       email_type, quality_score, source, icp_signal)
+       email_type, quality_score, source, icp_signal, phone, instagram_handle)
     VALUES
       (@email, @owner_name, @company_name, @website, @industry, @location,
-       @email_type, @quality_score, @source, @icp_signal)
+       @email_type, @quality_score, @source, @icp_signal, @phone, @instagram_handle)
   `).run({
-    email:         lead.email,
-    owner_name:    lead.ownerName    || '',
-    company_name:  lead.companyName  || '',
-    website:       lead.website      || '',
-    industry:      lead.industry     || '',
-    location:      lead.location     || '',
-    email_type:    lead.emailType    || 'generic',
-    quality_score: lead.qualityScore || 1,
-    source:        lead.source       || '',
-    icp_signal:    lead.isICPSignal  ? 1 : 0
+    email:            lead.email,
+    owner_name:       lead.ownerName        || '',
+    company_name:     lead.companyName      || '',
+    website:          lead.website          || '',
+    industry:         lead.industry         || '',
+    location:         lead.location         || '',
+    email_type:       lead.emailType        || 'generic',
+    quality_score:    lead.qualityScore     || 1,
+    source:           lead.source           || '',
+    icp_signal:       lead.isICPSignal      ? 1 : 0,
+    phone:            lead.phone            || '',
+    instagram_handle: lead.instagramHandle  || '',
   });
 }
 
@@ -120,7 +127,12 @@ function getAllLeads({ page = 1, perPage = 50, status = null } = {}) {
   return { items, total, page, perPage, pages: Math.ceil(total / perPage) };
 }
 
-function getUnsentLeads() {
+function getUnsentLeads(industry = null) {
+  if (industry) {
+    return getDb().prepare(
+      `SELECT * FROM leads WHERE email_status = 'unsent' AND industry LIKE ? ORDER BY quality_score DESC, id ASC`
+    ).all(`%${industry}%`);
+  }
   return getDb().prepare(
     `SELECT * FROM leads WHERE email_status = 'unsent' ORDER BY quality_score DESC, id ASC`
   ).all();
@@ -142,7 +154,6 @@ function markEmailFailed(email, error) {
 
 function getResendConfig() {
   const row = getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
-  // Env vars override DB values so Railway config works without touching the UI
   return {
     api_key:    process.env.RESEND_API_KEY    || row.api_key    || '',
     from_name:  process.env.RESEND_FROM_NAME  || row.from_name  || 'Martin',
@@ -152,9 +163,9 @@ function getResendConfig() {
 
 function saveResendConfig({ api_key, from_name, from_email }) {
   const existing = getDb().prepare(`SELECT * FROM resend_config WHERE id = 1`).get();
-  getDb().prepare(`
-    UPDATE resend_config SET api_key = @api_key, from_name = @from_name, from_email = @from_email WHERE id = 1
-  `).run({
+  getDb().prepare(
+    `UPDATE resend_config SET api_key = @api_key, from_name = @from_name, from_email = @from_email WHERE id = 1`
+  ).run({
     api_key:    (api_key && api_key !== '••••••••') ? api_key : existing.api_key,
     from_name:  from_name  || 'Martin',
     from_email: from_email || 'martin@preemo.club'
@@ -211,6 +222,12 @@ function getSentEmails(limit = 200) {
   `).all(limit);
 }
 
+function getDistinctIndustries() {
+  return getDb().prepare(
+    `SELECT DISTINCT industry FROM leads WHERE industry != '' ORDER BY industry ASC`
+  ).all().map(r => r.industry);
+}
+
 module.exports = {
   getDb,
   upsertLead,
@@ -227,4 +244,5 @@ module.exports = {
   saveMailTemplate,
   deleteMailTemplate,
   getSentEmails,
+  getDistinctIndustries,
 };
